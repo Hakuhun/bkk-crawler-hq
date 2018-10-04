@@ -7,11 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Apache.Avro" Version="1.7.7.2" />
+    <PackageReference Include="Confluent.Apache.Avro" Version="1.7.7.5" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
