@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,89 +8,186 @@ namespace bkk_crawler_hq.Model
 {
     class Weather
     {
+        private MainWeatherData main;
+
         /// <summary>
         /// Latitude of the measured weather 
         /// Description of the datatypes: https://openweathermap.org/weather-data   
         /// </summary>
-        private long latitude;
+        private double? latitude;
 
         /// <summary>
         /// Longitude of the measured weather 
         /// </summary>
-        private long longutide;
+        private double? longutide;
 
         /// <summary>
         /// Current timestamp when the weather was measured 
         /// </summary>
-        private long timestamp;
+        private long? timestamp;
 
-        /// <summary>
-        /// Current weather temperature in Celsius
-        /// Celsius
-        /// </summary>
-        private int temperature;
+        private WindData wind;
+
+        private RainData rain;
+
+        private SnowData snow;
+
+        public Weather(double? lat = null, double? lng = null, long? dt = null)
+        {
+            this.latitude = lat;
+            this.longutide = lng;
+            this.timestamp = dt;
+        }
+
+        [JsonProperty("main")]
+        public MainWeatherData Main { get => main; set => main = value; }
+
+        [JsonProperty("wind")]
+        public WindData Wind { get => wind; set => wind = value; }
+
+        [JsonProperty("clouds")]
+        public CloudData Cloud { get; set; }
+
+        [JsonProperty("rain")]
+        public RainData Rain { get => rain; set => rain = value; }
+
+        [JsonProperty("snow")]
+        public SnowData Snow { get => snow; set => snow = value; }
+
+        [JsonProperty("weather")]
+        private JArray Raw { get; set; }
 
         /// <summary>
         /// Overall condition of the weather in the area
         /// See more at https://openweathermap.org/weather-conditions
         /// </summary>
-        private string weatherCondition;
+        public string WeatherCondition { get => Raw.First.Value<string>("main"); }
 
-        /// <summary>
-        /// Humidity of te current measured weather
-        /// %
-        /// </summary>
-        private int humidity;
+        public double? Latitude
+        {
+            get => latitude;
+            set {
+                if (this.latitude == null)
+                    {
+                        latitude = value;
+                    }
+                }
+            }
 
-        /// <summary>
-        /// Preasure of the location
-        /// hPa
-        /// </summary>
-        private int pressure;
+        public double? Longutide
+        {
+            get => longutide;
+            set
+            {
+                if (this.longutide == null)
+                {
+                    this.longutide = value;
+                }
+            }
+        }
 
-        //TODO: IS IT IMPORTANT? 
-        /// <summary>
-        /// Wind speed
-        /// meter/sec
-        /// </summary>
-        private int windSpeed;
+        [JsonProperty("dt")]
+        public long? Timestamp
+        {
+            get => timestamp;
+            set
+            {
+                if (this.timestamp == null)
+                {
+                    this.timestamp = value;
+                }
+            }
+        }
 
-        //TODO: IS IT IMPORTANT? 
-        /// <summary>
-        /// Wind direction
-        /// degrees (meteorological)
-        /// </summary>
-        private int windDegree;
+        internal class SnowData
+        {
 
-        //TODO: IS IT IMPORTANT? 
-        /// <summary>
-        /// Cloudiness in percent
-        /// 
-        /// %
-        /// </summary>
-        private int cloud;
+            /// <summary>
+            /// Snow volume of the last 3 hour
+            /// </summary>
+            private int snow;
 
-        /// <summary>
-        /// Rain volume of the last 3 hour
-        /// </summary>
-        private int rain;
+            [JsonProperty("3h")]
+            public int Snow { get => snow; set => snow = value; }
+        }
 
-        /// <summary>
-        /// Snow volume of the last 3 hour
-        /// </summary>
-        private int snow;
+        internal class RainData
+        {
+            /// <summary>
+            /// Rain volume of the last 3 hour
+            /// </summary>
+            private int rain;
 
-        public long Latitude { get => latitude; set => latitude = value; }
-        public long Longutide { get => longutide; set => longutide = value; }
-        public long Timestamp { get => timestamp; set => timestamp = value; }
-        public int Temperature { get => temperature; set => temperature = value; }
-        public string WeatherCondition { get => weatherCondition; set => weatherCondition = value; }
-        public int Humidity { get => humidity; set => humidity = value; }
-        public int Pressure { get => pressure; set => pressure = value; }
-        public int WindSpeed { get => windSpeed; set => windSpeed = value; }
-        public int WindDegree { get => windDegree; set => windDegree = value; }
-        public int Cloud { get => cloud; set => cloud = value; }
-        public int Rain { get => rain; set => rain = value; }
-        public int Snow { get => snow; set => snow = value; }
+            [JsonProperty("3h")]
+            public int Rain { get => rain; set => rain = value; }
+        }
+
+        internal class CloudData
+        {
+            //TODO: IS IT IMPORTANT? 
+            /// <summary>
+            /// Cloudiness in percent
+            /// 
+            /// %
+            /// </summary>
+            private int cloud;
+
+            [JsonProperty("all")]
+            public int Cloud { get => cloud; set => cloud = value; }
+        }
+
+        internal class MainWeatherData
+        {
+            /// <summary>
+            /// Current weather temperature in Celsius
+            /// Celsius
+            /// </summary>
+            private double temperature;
+
+            /// <summary>
+            /// Humidity of te current measured weather
+            /// %
+            /// </summary>
+            private int humidity;
+
+            /// <summary>
+            /// Preasure of the location
+            /// hPa
+            /// </summary>
+            private double pressure;
+
+            [JsonProperty("temp")]
+            public double Temperature { get => temperature; set => temperature = value; }
+
+            [JsonProperty("humidity")]
+            public int Humidity { get => humidity; set => humidity = value; }
+
+            [JsonProperty("pressure")]
+            public double Pressure { get => pressure; set => pressure = value; }
+
+        }
+
+        internal class WindData
+        {
+            //TODO: IS IT IMPORTANT? 
+            /// <summary>
+            /// Wind speed
+            /// meter/sec
+            /// </summary>
+            private double windSpeed;
+
+            //TODO: IS IT IMPORTANT? 
+            /// <summary>
+            /// Wind direction
+            /// degrees (meteorological)
+            /// </summary>
+            private double windDegree;
+
+            [JsonProperty("speed")]
+            public double WindSpeed { get => windSpeed; set => windSpeed = value; }
+
+            [JsonProperty("deg")]
+            public double WindDegree { get => windDegree; set => windDegree = value; }
+        }
     }
 }
