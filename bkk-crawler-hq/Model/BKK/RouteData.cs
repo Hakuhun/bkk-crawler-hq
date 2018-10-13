@@ -10,6 +10,7 @@ namespace bkk_crawler_hq.Model.BKK
         private string vehicleId;
         private string tripId;
         private string routeId;
+        private string status;
 
         [JsonProperty("vehicleId")]
         public string VehicleId { get => vehicleId; set => vehicleId = value; }
@@ -17,5 +18,7 @@ namespace bkk_crawler_hq.Model.BKK
         public string TripId { get => tripId; set => tripId = value; }
         [JsonProperty("routeId")]
         public string RouteId { get => routeId; set => routeId = value; }
+        [JsonProperty("status")]
+        public string Status { get => status; set => status = value; }
     }
 }

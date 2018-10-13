@@ -23,9 +23,9 @@ namespace bkk_crawler_hq
         private readonly string base_url = "http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&appId={2}&units=metric";
 
 
-        public async Task<Weather> getWeatherByGeoTags(double lat, double lng)
+        public async Task<Weather> getWeatherByGeoTags(Location loc)
         {
-            string url = URLBuilder(lat, lng);
+            string url = URLBuilder(loc.Lat, loc.Lng);
             Weather weather;
             using (var httpClient = new HttpClient())
             {
