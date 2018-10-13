@@ -1,6 +1,7 @@
 ﻿using bkk_crawler_hq.Model;
 using System;
 using System.Threading.Tasks;
+using bkk_crawler_hq.Model.BKK;
 
 namespace bkk_crawler_hq
 {
@@ -9,13 +10,25 @@ namespace bkk_crawler_hq
         static void Main(string[] args)
         {
             WCrawler w = new WCrawler();
+            BKKCrawler bkk = new BKKCrawler();
             Weather asd;
+            Trip trytrip;
             new Task(async () =>
             {
-                asd = w.getWeatherByGeoTags(47.46, 19.01).Result;
-                Console.WriteLine(asd.WeatherCondition);
+                try
+                {
+                    Task<Trip> asd2 = bkk.getDetailedTripData("BKK_B8428358x", "BKK_6229");
+                    trytrip = await asd2;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                //asd = await w.getWeatherByGeoTags(47.46, 19.01);
+                //Console.WriteLine(asd.WeatherCondition);
             }).Start();
             Console.ReadLine();
         }
+
     }
 }
