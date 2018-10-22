@@ -14,8 +14,6 @@ namespace bkk_crawler_hq
         {
             Crawler crawler = new Crawler();
             crawler.getData();
-            //crawler.SerializeData();
-
             Console.ReadLine();
         }
 

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,20 +19,21 @@ namespace bkk_crawler_hq
     {
         private BKKCrawler bkk;
         private WCrawler w;
-        private List<Trip> trips;
-        private List<Weather> weathers;
+        //private List<Trip> trips;
+        //private List<Weather> weathers;
         private static object blockobject = new object();
-        private List<SimpleTripData> tripDatas = new List<SimpleTripData>();
-        private List<SimpleWeatherData> weatherDatas = new List<SimpleWeatherData>();
-        private List<Task> tasksToDo = new List<Task>();
+        private ConcurrentBag<SimpleTripData> tripDatas = new ConcurrentBag<SimpleTripData>();
+        private ConcurrentBag<SimpleWeatherData> weatherDatas = new ConcurrentBag<SimpleWeatherData>();
+        private ConcurrentBag<Task> tasksToDo = new ConcurrentBag<Task>();
+        private ConcurrentBag<StopData> stopDatas = new ConcurrentBag<StopData>();
 
         public Crawler()
         {
             this.bkk = new BKKCrawler();
             this.w = new WCrawler();
 
-            this.weathers = new List<Weather>();
-            this.trips = new List<Trip>();
+            //this.weathers = new List<Weather>();
+            //this.trips = new List<Trip>();
 
         }
 
@@ -40,21 +44,20 @@ namespace bkk_crawler_hq
                 Task task = new Task(() => { Crawl(route); }, TaskCreationOptions.LongRunning);
                 tasksToDo.Add(task);
             }
-
-            //Task.WaitAll(tasksToDo.ToArray(), CancellationToken.None);
-
+            
             foreach (Task task in tasksToDo)
             {
                 task.Start();
             }
 
-            //Task.WhenAll(new Task(()=>SerializeData())).Start();
+            Task.WaitAll(tasksToDo.ToArray(), CancellationToken.None);
 
-            //SerializeData();
+            SerializeData();
         }
 
         public void SerializeData()
         {
+            tripDatas.OrderBy(x => x.RouteID).OrderBy(x => x.VeichleID);
             SerializeTrips();
             //SerializeWeather();
             SerializeStops();
@@ -72,10 +75,11 @@ namespace bkk_crawler_hq
 
         private void SerializeStops()
         {
-            foreach (var trip in trips)
-            {
-                ParquetConvert.Serialize(trip.Stops, "stops.parquet");
-            }
+            //foreach (var trip in trips)
+            //{
+            //    ParquetConvert.Serialize(trip.Stops, "stops.parquet");
+            //}
+            ParquetConvert.Serialize(stopDatas, "stops.parquet");
         }
 
         async void Crawl(RouteData route)
@@ -83,12 +87,16 @@ namespace bkk_crawler_hq
             try
             {
                 Trip trip = await bkk.getDetailedTripData(route);
-                trips.Add(trip);
-                Console.WriteLine(trip.Veichle.Model);
+                //trips.Add(trip);
+                foreach (var stop in trip.Stops)
+                {
+                    stopDatas.Add(stop);
+                }
+
                 lock (blockobject)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine(trip.RouteID + "sikeresen olvasva");
+                    Console.WriteLine(trip.RouteID + " sikeresen olvasva");
                 }
 
                 tripDatas.Add(trip.getparquetFormat());
