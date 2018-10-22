@@ -32,7 +32,10 @@ namespace bkk_crawler_hq
                 var json = await httpClient.GetStringAsync(url);
                 weather = JsonConvert.DeserializeObject<Weather>(json);
             }
-                                          
+
+            weather.Latitude = loc.Lat;
+            weather.Longitude = loc.Lng;
+
             return weather;
         }
 

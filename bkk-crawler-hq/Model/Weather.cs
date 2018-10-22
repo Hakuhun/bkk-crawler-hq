@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using bkk_crawler_hq.Model.Parquet;
 
 namespace bkk_crawler_hq.Model
 {
@@ -19,12 +20,12 @@ namespace bkk_crawler_hq.Model
         /// <summary>
         /// Longitude of the measured weather 
         /// </summary>
-        private double? longutide;
+        private double? _longitude;
 
         /// <summary>
         /// Current timestamp when the weather was measured 
         /// </summary>
-        private long? timestamp;
+        private long? currentTime;
 
         private WindData wind;
 
@@ -32,11 +33,16 @@ namespace bkk_crawler_hq.Model
 
         private SnowData snow;
 
+        public Weather()
+        {
+                
+        }
+
         public Weather(double? lat = null, double? lng = null, long? dt = null)
         {
             this.latitude = lat;
-            this.longutide = lng;
-            this.timestamp = dt;
+            this._longitude = lng;
+            this.currentTime = dt;
         }
 
         [JsonProperty("main")]
@@ -67,36 +73,32 @@ namespace bkk_crawler_hq.Model
         {
             get => latitude;
             set {
-                if (this.latitude == null)
-                    {
-                        latitude = value;
-                    }
-                }
+                latitude = value;
             }
+        }
 
-        public double? Longutide
+        public double? Longitude
         {
-            get => longutide;
+            get => _longitude;
             set
             {
-                if (this.longutide == null)
-                {
-                    this.longutide = value;
-                }
+                this._longitude = value;
             }
         }
 
         [JsonProperty("dt")]
-        public long? Timestamp
+        public long? CurrentTime
         {
-            get => timestamp;
+            get => currentTime;
             set
             {
-                if (this.timestamp == null)
-                {
-                    this.timestamp = value;
-                }
+                this.currentTime = value;
             }
+        }
+
+        public SimpleWeatherData getParquetFormat()
+        {
+            return new SimpleWeatherData(this);
         }
 
         internal class SnowData

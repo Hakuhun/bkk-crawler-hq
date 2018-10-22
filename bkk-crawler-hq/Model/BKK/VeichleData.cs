@@ -52,5 +52,8 @@ namespace bkk_crawler_hq.Model.BKK
             get => veichleType;
             set => veichleType = value;
         }
+
+
+
     }
 }

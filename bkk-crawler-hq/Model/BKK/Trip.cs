@@ -8,8 +8,14 @@ namespace bkk_crawler_hq.Model.BKK
     public class Trip
     {
         private string route_id;
+        private long currentTime;
         private VeichleData veichle;
         private List<StopData> stops;
+
+        public Trip()
+        {
+                
+        }
 
         public string RouteID
         {
@@ -30,6 +36,12 @@ namespace bkk_crawler_hq.Model.BKK
             get => stops;
             set => stops = value;
         }
+        [JsonProperty("currentTime")]
+        public long CurrentTime { get => currentTime; set => currentTime = value; }
 
+        public SimpleTripData getparquetFormat()
+        {
+            return new SimpleTripData(this);
+        }
     }
 }

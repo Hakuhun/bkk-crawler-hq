@@ -10,6 +10,7 @@ namespace bkk_crawler_hq.Model.BKK
         private long predictedDepartureTime;
         private long arrivalTime;
         private long predictedArrivalTime;
+        private string routeId, tripId, veichleId;
 
         [JsonProperty("stopId")]
         public string StopId
@@ -51,6 +52,24 @@ namespace bkk_crawler_hq.Model.BKK
         {
             get => predictedArrivalTime;
             set => predictedArrivalTime = value;
+        }
+
+        public string RouteId
+        {
+            get { return routeId; }
+            set { routeId = value; }
+        }
+
+        public string TripId
+        {
+            get { return tripId; }
+            set { tripId = value; }
+        }
+
+        public string VeichleId
+        {
+            get { return veichleId; }
+            set { veichleId = value; }
         }
     }
 }

@@ -134,12 +134,22 @@ namespace bkk_crawler_hq
                 
                 JObject json = JObject.Parse(jsonText);
                 var conditionCode = json.GetValue("code").Value<string>();
-                
+                var currenttime = long.Parse(json.GetValue("currentTime").Value<string>());
+
                 if (conditionCode == "200")
                 {
                     var filteredJson = json.GetValue("data").SelectToken("entry");
                     trip = filteredJson.ToObject<Trip>();
                     trip.RouteID = route.RouteId;
+                    trip.CurrentTime = currenttime;
+
+                    for (int i = 0; i < trip.Stops.Count; i++)
+                    {
+                        trip.Stops[i].RouteId = trip.RouteID;
+                        trip.Stops[i].TripId = trip.Veichle.TripID;
+                        trip.Stops[i].VeichleId = trip.Veichle.VeichleID;
+                    }
+
                     return trip;
                 }
                 else
