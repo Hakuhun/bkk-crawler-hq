@@ -8,6 +8,10 @@ using Microsoft.Win32.SafeHandles;
 using Parquet;
 using Parquet.Data;
 using DataColumn = Parquet.Data.DataColumn;
+/// <summary>
+/// APEEND example: https://github.com/elastacloud/parquet-dotnet/blob/master/doc/writing.md
+/// </summary>
+
 
 namespace bkk_crawler_hq.Model
 {
@@ -29,7 +33,7 @@ namespace bkk_crawler_hq.Model
             var ms = new MemoryStream();
             ms.Position = 0;
 
-            using (var writer = new ParquetWriter(new Schema(ct, lat, lng, route, trip, veichle, model, status), ms, append: true))
+            using (var writer = new ParquetWriter(new Schema(ct, lat, lng, route, trip, veichle, model, status), ms,new ParquetOptions(), append:true))
             {
                 using (ParquetRowGroupWriter rg = writer.CreateRowGroup())
                 {

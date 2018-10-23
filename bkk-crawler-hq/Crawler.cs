@@ -52,9 +52,9 @@ namespace bkk_crawler_hq
 
         public void SerializeData()
         {
-            //SerializeTrips();
-            //SerializeWeather();
-            //SerializeStops();
+            SerializeTrips();
+            SerializeWeather();
+            SerializeStops();
             Serializator.SaveTripsToShema(tripDatas);
         }
 
