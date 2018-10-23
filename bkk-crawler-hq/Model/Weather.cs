@@ -107,10 +107,10 @@ namespace bkk_crawler_hq.Model
             /// <summary>
             /// Snow volume of the last 3 hour
             /// </summary>
-            private int snow;
+            private int? snow;
 
             [JsonProperty("3h")]
-            public int Snow { get => snow; set => snow = value; }
+            public int? Snow { get => snow; set => snow = value; }
         }
 
         internal class RainData
@@ -118,10 +118,10 @@ namespace bkk_crawler_hq.Model
             /// <summary>
             /// Rain volume of the last 3 hour
             /// </summary>
-            private int rain;
+            private int? rain;
 
             [JsonProperty("3h")]
-            public int Rain { get => rain; set => rain = value; }
+            public int? Rain { get => rain; set => rain = value; }
         }
 
         internal class CloudData

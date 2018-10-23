@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
@@ -25,14 +26,14 @@ namespace bkk_crawler_hq.Model
                 
         }
 
-        public long CurrentTime
-        {
-            get => trip.CurrentTime;
-        }
-        
         public SimpleTripData(Trip trip)
         {
             this.trip = trip;
+        }
+
+        public long CurrentTime
+        {
+            get => trip.CurrentTime;
         }
 
         public double Latitude
@@ -69,7 +70,5 @@ namespace bkk_crawler_hq.Model
         {
             get => trip.Veichle.Status;
         }
-
-
     }
 }

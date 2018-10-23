@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using bkk_crawler_hq.Exceptions;
+﻿using bkk_crawler_hq.Exceptions;
 using bkk_crawler_hq.Model;
 using bkk_crawler_hq.Model.BKK;
 using bkk_crawler_hq.Model.Parquet;
 using Parquet;
 using Parquet.Data;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace bkk_crawler_hq
 {
@@ -19,22 +18,18 @@ namespace bkk_crawler_hq
     {
         private BKKCrawler bkk;
         private WCrawler w;
-        //private List<Trip> trips;
-        //private List<Weather> weathers;
         private static object blockobject = new object();
         private ConcurrentBag<SimpleTripData> tripDatas = new ConcurrentBag<SimpleTripData>();
         private ConcurrentBag<SimpleWeatherData> weatherDatas = new ConcurrentBag<SimpleWeatherData>();
-        private ConcurrentBag<Task> tasksToDo = new ConcurrentBag<Task>();
+        private List<Task> tasksToDo = new List<Task>();
         private ConcurrentBag<StopData> stopDatas = new ConcurrentBag<StopData>();
+
+        private readonly string weather_path = "D:/BKK/weather/", trip_path = "D:/BKK/trip/", stop_path = "D:/BKK/stop/";
 
         public Crawler()
         {
             this.bkk = new BKKCrawler();
             this.w = new WCrawler();
-
-            //this.weathers = new List<Weather>();
-            //this.trips = new List<Trip>();
-
         }
 
         public void getData()
@@ -57,37 +52,32 @@ namespace bkk_crawler_hq
 
         public void SerializeData()
         {
-            tripDatas.OrderBy(x => x.RouteID).OrderBy(x => x.VeichleID);
-            SerializeTrips();
+            //SerializeTrips();
             //SerializeWeather();
-            SerializeStops();
+            //SerializeStops();
+            Serializator.SaveTripsToShema(tripDatas);
         }
 
         private void SerializeTrips()
         {
-            Schema schema = ParquetConvert.Serialize(tripDatas, "trips.parquet");
+            Schema schema = ParquetConvert.Serialize(tripDatas, trip_path + "trips.parquet");
         }
 
         private void SerializeWeather()
         {
-            Schema schema = ParquetConvert.Serialize(weatherDatas, "weathers.parquet");
+            Schema schema = ParquetConvert.Serialize(weatherDatas, weather_path+ "weathers.parquet");
         }
 
         private void SerializeStops()
         {
-            //foreach (var trip in trips)
-            //{
-            //    ParquetConvert.Serialize(trip.Stops, "stops.parquet");
-            //}
-            ParquetConvert.Serialize(stopDatas, "stops.parquet");
+            ParquetConvert.Serialize(stopDatas, stop_path+"stops.parquet");
         }
 
         async void Crawl(RouteData route)
         {
             try
             {
-                Trip trip = await bkk.getDetailedTripData(route);
-                //trips.Add(trip);
+                Trip trip = await bkk.getDetailedTripData(route).ConfigureAwait(true);
                 foreach (var stop in trip.Stops)
                 {
                     stopDatas.Add(stop);
@@ -101,16 +91,19 @@ namespace bkk_crawler_hq
 
                 tripDatas.Add(trip.getparquetFormat());
 
-                //Weather weather = await w.getWeatherByGeoTags(trip.Veichle.Location);
-                //weather.CurrentTime = trip.CurrentTime;
+                Weather weather = await w.getWeatherByGeoTags(trip.Veichle.Location).ConfigureAwait(true);
+                weather.CurrentTime = trip.CurrentTime;
                 //weathers.Add(weather);
-                //lock (blockobject)
-                //{
-                //    Console.ForegroundColor = ConsoleColor.Blue;
-                //    Console.WriteLine(trip.RouteID + "-hoz tartozó időjárás adat sikeresen olvasva");
-                //}
+                lock (blockobject)
+                {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine(trip.RouteID + "-hoz tartozó időjárás adat sikeresen olvasva");
+                }
 
-                //weatherDatas.Add(weather.getParquetFormat());
+                SimpleWeatherData swd = weather.getParquetFormat();
+                swd.RouteID = trip.RouteID;
+                swd.TripID = trip.Veichle.TripID;
+                weatherDatas.Add(swd);
 
 
             }

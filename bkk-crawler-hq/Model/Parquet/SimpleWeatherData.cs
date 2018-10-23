@@ -18,6 +18,10 @@ namespace bkk_crawler_hq.Model.Parquet
             this.weather = weather;
         }
 
+        public string RouteID { get; set; }
+
+        public string TripID { get; set; }
+
         public double? Latitude
         {
             get => weather.Latitude;
@@ -33,14 +37,35 @@ namespace bkk_crawler_hq.Model.Parquet
             get => weather.CurrentTime;
         }
 
-        public int SnowingIntensity
+        public int? SnowingIntensity
         {
-            get => weather.Snow.Snow;
+            get
+            {
+                try
+                {
+                    return weather.Snow.Snow;
+                }
+                catch (NullReferenceException)
+                {
+                    return 0;
+                }
+            }
         }
 
-        public int RainingIntensity
+        public int? RainingIntensity
         {
-            get => weather.Rain.Rain;
+            get
+            {
+                try
+                { 
+                    return weather.Rain.Rain;
+                }
+                catch (NullReferenceException)
+                {
+                    return 0;
+                }
+
+            }
         }
 
         public double Temperature
