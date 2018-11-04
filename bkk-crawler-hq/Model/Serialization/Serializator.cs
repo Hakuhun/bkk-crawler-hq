@@ -4,7 +4,10 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
+using bkk_crawler_hq.Model.BKK;
+using bkk_crawler_hq.Model.Parquet;
 using Microsoft.Win32.SafeHandles;
+using Newtonsoft.Json;
 using Parquet;
 using Parquet.Data;
 using DataColumn = Parquet.Data.DataColumn;
@@ -17,9 +20,40 @@ namespace bkk_crawler_hq.Model
 {
     class Serializator
     {
-        private static readonly string weather_path = "D:/BKK/weather/weather.parquet", trip_path = "D:/BKK/trip/trips.parquet", stop_path = "D:/BKK/stop/stops.parquet";
+        private static readonly string weather_path = "D:/BKK/weather/weather", trip_path = "D:/BKK/trip/trips", stop_path = "D:/BKK/stop/stops";
 
-        public static void SaveTripsToShema(IEnumerable<SimpleTripData> data)
+        public static void SerializeCollectionToCSV(IEnumerable<ISimpleDataModel> list, string path)
+        {
+            string text = "";
+            if (!File.Exists(path))
+                text = list.FirstOrDefault().getCSVHeader();
+
+            foreach (ISimpleDataModel data in list)
+            {
+                text += data.getCSVFormat();
+            }
+
+            File.AppendAllText(path, text, Encoding.UTF8);
+        }
+
+        public static void SerializeCollectionToJSON(IEnumerable<ISimpleDataModel> list, string path)
+        {
+            List<ISimpleDataModel> existing;
+            try
+            {
+                existing = JsonConvert.DeserializeObject<List<ISimpleDataModel>>(path);
+            }
+            catch (Exception e)
+            {
+                existing = list.ToList();
+            }
+
+            existing.AddRange(list);
+
+            File.WriteAllText(path, JsonConvert.SerializeObject(existing));
+        }
+
+        public static void SaveTripsToParquetShema(IEnumerable<SimpleTripData> data)
         {
             var ct = new DataField<long>("CurrentTime");
             var lat = new DataField<double>("Latitude");

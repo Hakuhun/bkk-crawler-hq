@@ -39,7 +39,7 @@ namespace bkk_crawler_hq.Model.BKK
         [JsonProperty("currentTime")]
         public long CurrentTime { get => currentTime; set => currentTime = value; }
 
-        public SimpleTripData getparquetFormat()
+        public ISimpleDataModel getSerializableFormat()
         {
             return new SimpleTripData(this);
         }

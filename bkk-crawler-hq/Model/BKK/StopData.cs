@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace bkk_crawler_hq.Model.BKK
 {
-    public class StopData
+    public class StopData : ISimpleDataModel
     {
+        private long currentTime;
         private string stopID;
         private int stop_squence;
         private long departureTime;
@@ -70,6 +72,21 @@ namespace bkk_crawler_hq.Model.BKK
         {
             get { return veichleId; }
             set { veichleId = value; }
+        }
+
+        public long CurrentTime { get => currentTime; set => currentTime = value; }
+
+        public string getCSVFormat()
+        {
+            return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9}", RouteId, TripId, VeichleId, StopId,
+                CurrentTime, StopSquence, PredictedDepartureTime, DepartureTime, PredictedArrivalTime, ArrivalTime) + Environment.NewLine;
+        }
+
+        public string getCSVHeader()
+        {
+            return
+                "RouteId;TripId;VeichleId;StopId;CurrentTime;StopSquence;PredictedDepartureTime;DepartureTime;PredictedArrivalTime;ArrivalTime" +
+                Environment.NewLine;
         }
     }
 }

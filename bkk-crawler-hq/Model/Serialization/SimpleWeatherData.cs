@@ -4,7 +4,7 @@ using System.Text;
 
 namespace bkk_crawler_hq.Model.Parquet
 {
-    class SimpleWeatherData
+    class SimpleWeatherData : ISimpleDataModel
     {
         public SimpleWeatherData()
         {
@@ -92,6 +92,20 @@ namespace bkk_crawler_hq.Model.Parquet
         public double WindDegree
         {
             get => weather.Wind.WindDegree;
+        }
+
+        public string getCSVFormat()
+        {
+            return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11}",
+                       CurrentTime, Latitude, Longutide, RouteID, TripID, SnowingIntensity, RainingIntensity,
+                       Temperature, Humidity, Pressure, WindSpeed, WindDegree) + Environment.NewLine;
+        }
+
+        public string getCSVHeader()
+        {
+            return
+                "CurrentTime;Latitude;Longutide;RouteID;TripID;SnowingIntensity;RainingIntensity;Temperature;Humidity;Pressure;WindSpeed;WindDegree" +
+                Environment.NewLine;
         }
     }
 }

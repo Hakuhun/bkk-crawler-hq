@@ -17,7 +17,7 @@ using Parquet.Data;
 
 namespace bkk_crawler_hq.Model
 {
-    public class SimpleTripData
+    public class SimpleTripData : ISimpleDataModel
     {
         private Trip trip;
 
@@ -69,6 +69,22 @@ namespace bkk_crawler_hq.Model
         public string Status
         {
             get => trip.Veichle.Status;
+        }
+
+        public string getJSONFormat()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
+        public string getCSVFormat()
+        {
+            return string.Format("{0};{1};{2};{3};{4};{5};{6};{7}" + Environment.NewLine,
+                CurrentTime, Latitude,Longitude, RouteID, TripID, VeichleID, Model, Status);
+        }
+
+        public string getCSVHeader()
+        {
+            return "CurrentTime;Latitude;Longitude;RouteID;TripID;VeichleID;Model;Status" + Environment.NewLine;
         }
     }
 }

@@ -19,8 +19,8 @@ namespace bkk_crawler_hq
         private BKKCrawler bkk;
         private WCrawler w;
         private static object blockobject = new object();
-        private ConcurrentBag<SimpleTripData> tripDatas = new ConcurrentBag<SimpleTripData>();
-        private ConcurrentBag<SimpleWeatherData> weatherDatas = new ConcurrentBag<SimpleWeatherData>();
+        private ConcurrentBag<ISimpleDataModel> tripDatas = new ConcurrentBag<ISimpleDataModel>();
+        private ConcurrentBag<ISimpleDataModel> weatherDatas = new ConcurrentBag<ISimpleDataModel>();
         private List<Task> tasksToDo = new List<Task>();
         private ConcurrentBag<StopData> stopDatas = new ConcurrentBag<StopData>();
 
@@ -52,26 +52,33 @@ namespace bkk_crawler_hq
 
         public void SerializeData()
         {
-            SerializeTrips();
-            SerializeWeather();
-            SerializeStops();
-            Serializator.SaveTripsToShema(tripDatas);
+            //SerializeTrips();
+            //SerializeWeather();
+            //SerializeStops();
+            //Serializator.SaveTripsToParquetShema(tripDatas);
+            Serializator.SerializeCollectionToCSV(tripDatas, trip_path + "trips.csv");
+            Serializator.SerializeCollectionToCSV(weatherDatas, weather_path + "weathers.csv");
+            Serializator.SerializeCollectionToCSV(stopDatas, stop_path + "stops.csv");
+            Serializator.SerializeCollectionToJSON(tripDatas, trip_path + "trips.json");
+            Serializator.SerializeCollectionToJSON(weatherDatas, weather_path + "weathers.json");
+            Serializator.SerializeCollectionToJSON(stopDatas, stop_path + "stops.json");
+
         }
 
-        private void SerializeTrips()
-        {
-            Schema schema = ParquetConvert.Serialize(tripDatas, trip_path + "trips.parquet");
-        }
+        //private void SerializeTrips()
+        //{
+        //    Schema schema = ParquetConvert.Serialize(tripDatas, trip_path + "trips.parquet");
+        //}
 
-        private void SerializeWeather()
-        {
-            Schema schema = ParquetConvert.Serialize(weatherDatas, weather_path+ "weathers.parquet");
-        }
+        //private void SerializeWeather()
+        //{
+        //    Schema schema = ParquetConvert.Serialize(weatherDatas, weather_path+ "weathers.parquet");
+        //}
 
-        private void SerializeStops()
-        {
-            ParquetConvert.Serialize(stopDatas, stop_path+"stops.parquet");
-        }
+        //private void SerializeStops()
+        //{
+        //    ParquetConvert.Serialize(stopDatas, stop_path+"stops.parquet");
+        //}
 
         async void Crawl(RouteData route)
         {
@@ -89,7 +96,7 @@ namespace bkk_crawler_hq
                     Console.WriteLine(trip.RouteID + " sikeresen olvasva");
                 }
 
-                tripDatas.Add(trip.getparquetFormat());
+                tripDatas.Add(trip.getSerializableFormat());
 
                 Weather weather = await w.getWeatherByGeoTags(trip.Veichle.Location).ConfigureAwait(true);
                 weather.CurrentTime = trip.CurrentTime;

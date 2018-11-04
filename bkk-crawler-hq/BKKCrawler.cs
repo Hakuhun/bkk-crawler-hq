@@ -147,6 +147,7 @@ namespace bkk_crawler_hq
 
                     for (int i = 0; i < trip.Stops.Count; i++)
                     {
+                        trip.Stops[i].CurrentTime = trip.CurrentTime;
                         trip.Stops[i].RouteId = trip.RouteID;
                         trip.Stops[i].TripId = trip.Veichle.TripID;
                         trip.Stops[i].VeichleId = trip.Veichle.VeichleID;
