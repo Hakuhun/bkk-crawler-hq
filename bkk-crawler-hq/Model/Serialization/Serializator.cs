@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -38,19 +39,22 @@ namespace bkk_crawler_hq.Model
 
         public static void SerializeCollectionToJSON(IEnumerable<ISimpleDataModel> list, string path)
         {
-            List<ISimpleDataModel> existing;
+            List<dynamic> existing = null;
             try
             {
-                existing = JsonConvert.DeserializeObject<List<ISimpleDataModel>>(path);
+                existing = JsonConvert.DeserializeObject<List<dynamic>>(File.ReadAllText(path));
             }
-            catch (Exception e)
+            catch (FileNotFoundException e)
             {
-                existing = list.ToList();
+                existing = new List<dynamic>(list);
+                File.WriteAllText(path, JsonConvert.SerializeObject(existing));
             }
 
-            existing.AddRange(list);
-
-            File.WriteAllText(path, JsonConvert.SerializeObject(existing));
+            if (existing != null)
+            {
+                existing.AddRange(list);
+                File.WriteAllText(path, JsonConvert.SerializeObject(existing));
+            }
         }
 
         public static void SaveTripsToParquetShema(IEnumerable<SimpleTripData> data)

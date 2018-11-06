@@ -136,9 +136,7 @@ namespace bkk_crawler_hq
                 var conditionCode = json.GetValue("code").Value<string>();
                 var currenttime = long.Parse(json.GetValue("currentTime").Value<string>());
 
-                if (conditionCode == "" +
-                    "200" +
-                    "")
+                if (conditionCode == "200")
                 {
                     var filteredJson = json.GetValue("data").SelectToken("entry");
                     trip = filteredJson.ToObject<Trip>();

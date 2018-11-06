@@ -76,15 +76,20 @@ namespace bkk_crawler_hq.Model
             return JsonConvert.SerializeObject(this);
         }
 
+        public string VeichleType
+        {
+            get => this.trip.Veichle.VeichleType;
+        }
+
         public string getCSVFormat()
         {
-            return string.Format("{0};{1};{2};{3};{4};{5};{6};{7}" + Environment.NewLine,
-                CurrentTime, Latitude,Longitude, RouteID, TripID, VeichleID, Model, Status);
+            return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}" + Environment.NewLine,
+                CurrentTime, Latitude,Longitude, RouteID, TripID, VeichleID, Model, Status, VeichleType);
         }
 
         public string getCSVHeader()
         {
-            return "CurrentTime;Latitude;Longitude;RouteID;TripID;VeichleID;Model;Status" + Environment.NewLine;
+            return "CurrentTime;Latitude;Longitude;RouteID;TripID;VeichleID;Model;Status;VeichleType" + Environment.NewLine;
         }
     }
 }

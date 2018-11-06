@@ -52,33 +52,13 @@ namespace bkk_crawler_hq
 
         public void SerializeData()
         {
-            //SerializeTrips();
-            //SerializeWeather();
-            //SerializeStops();
-            //Serializator.SaveTripsToParquetShema(tripDatas);
             Serializator.SerializeCollectionToCSV(tripDatas, trip_path + "trips.csv");
             Serializator.SerializeCollectionToCSV(weatherDatas, weather_path + "weathers.csv");
             Serializator.SerializeCollectionToCSV(stopDatas, stop_path + "stops.csv");
             Serializator.SerializeCollectionToJSON(tripDatas, trip_path + "trips.json");
             Serializator.SerializeCollectionToJSON(weatherDatas, weather_path + "weathers.json");
             Serializator.SerializeCollectionToJSON(stopDatas, stop_path + "stops.json");
-
         }
-
-        //private void SerializeTrips()
-        //{
-        //    Schema schema = ParquetConvert.Serialize(tripDatas, trip_path + "trips.parquet");
-        //}
-
-        //private void SerializeWeather()
-        //{
-        //    Schema schema = ParquetConvert.Serialize(weatherDatas, weather_path+ "weathers.parquet");
-        //}
-
-        //private void SerializeStops()
-        //{
-        //    ParquetConvert.Serialize(stopDatas, stop_path+"stops.parquet");
-        //}
 
         async void Crawl(RouteData route)
         {
@@ -100,19 +80,25 @@ namespace bkk_crawler_hq
 
                 Weather weather = await w.getWeatherByGeoTags(trip.Veichle.Location).ConfigureAwait(true);
                 weather.CurrentTime = trip.CurrentTime;
-                //weathers.Add(weather);
+
                 lock (blockobject)
                 {
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine(trip.RouteID + "-hoz tartozó időjárás adat sikeresen olvasva");
+                    if (weather != null)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine(trip.RouteID + "-hoz tartozó időjárás adat sikeresen olvasva");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("HIBA: " + trip.RouteID +"-hoz tartozó időjárásadat nem lett olvasva." + Environment.NewLine);
+                    }
                 }
 
                 SimpleWeatherData swd = weather.getParquetFormat();
                 swd.RouteID = trip.RouteID;
                 swd.TripID = trip.Veichle.TripID;
                 weatherDatas.Add(swd);
-
-
             }
             catch (NotInTransitException nit)
             {
