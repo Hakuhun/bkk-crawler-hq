@@ -7,6 +7,7 @@ using Parquet.Data;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -16,6 +17,8 @@ namespace bkk_crawler_hq
 {
     class Crawler
     {
+        Stopwatch sw = new Stopwatch();
+
         private BKKCrawler bkk;
         private WCrawler w;
         private static object blockobject = new object();
@@ -24,7 +27,9 @@ namespace bkk_crawler_hq
         private List<Task> tasksToDo = new List<Task>();
         private ConcurrentBag<StopData> stopDatas = new ConcurrentBag<StopData>();
 
-        private readonly string weather_path = "D:/BKK/weather/", trip_path = "D:/BKK/trip/", stop_path = "D:/BKK/stop/";
+        //private readonly string weather_path = "D:/BKK/weather/", trip_path = "D:/BKK/trip/", stop_path = "D:/BKK/stop/";
+
+        private readonly string weather_path = String.Empty, trip_path = String.Empty, stop_path = String.Empty;
 
         public Crawler()
         {
@@ -32,7 +37,7 @@ namespace bkk_crawler_hq
             this.w = new WCrawler();
         }
 
-        public void getData()
+        public void getDataParallel()
         {
             foreach (RouteData route in this.bkk.AllRoutes)
             {
@@ -46,8 +51,48 @@ namespace bkk_crawler_hq
             }
 
             Task.WaitAll(tasksToDo.ToArray(), CancellationToken.None);
+        }
 
-            SerializeData();
+        public void GetDataSequential()
+        {
+            BKKCrawler bkkc = new BKKCrawler();
+            WCrawler wc = new WCrawler();
+            foreach (var route in bkkc.AllRoutes)
+            {
+                Trip local_trip = null;
+                try
+                {
+                    local_trip = bkkc.getDetailedTripData(route);
+                    tripDatas.Add(local_trip.getSerializableFormat());
+                    //Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    //Console.WriteLine(local_trip);
+
+
+                    foreach (StopData stop in local_trip.Stops)
+                    {
+                        //Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                        //Console.WriteLine(local_trip.RouteID.ToString() + " @ " + stop.ToString());
+                        stopDatas.Add(stop);
+
+                    }
+                    Weather local_weather = wc.getWeatherByGeoTags(local_trip.Veichle.Location);
+                    //Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    //Console.WriteLine(local_weather);
+                    weatherDatas.Add(local_weather.getSerializableFormat());
+                }
+                catch (BKKExcepton)
+                {
+                    Console.WriteLine("HIBA");
+                }
+
+            }
+        }
+
+        public void clearData()
+        {
+            tripDatas.Clear();
+            stopDatas.Clear();
+            weatherDatas.Clear();
         }
 
         public void SerializeData()
@@ -64,7 +109,8 @@ namespace bkk_crawler_hq
         {
             try
             {
-                Trip trip = await bkk.getDetailedTripData(route).ConfigureAwait(true);
+                //Trip trip = await bkk.getDetailedTripData(route);
+                Trip trip = bkk.getDetailedTripData(route);
                 foreach (var stop in trip.Stops)
                 {
                     stopDatas.Add(stop);
@@ -72,30 +118,31 @@ namespace bkk_crawler_hq
 
                 lock (blockobject)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine(trip.RouteID + " sikeresen olvasva");
+                    //Console.ForegroundColor = ConsoleColor.Green;
+                    //Console.WriteLine(trip.RouteID + " sikeresen olvasva");
                 }
 
                 tripDatas.Add(trip.getSerializableFormat());
 
-                Weather weather = await w.getWeatherByGeoTags(trip.Veichle.Location).ConfigureAwait(true);
+                //Weather weather = await w.getWeatherByGeoTags(trip.Veichle.Location);
+                Weather weather = w.getWeatherByGeoTags(trip.Veichle.Location);
                 weather.CurrentTime = trip.CurrentTime;
 
                 lock (blockobject)
                 {
                     if (weather != null)
                     {
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.WriteLine(trip.RouteID + "-hoz tartozó időjárás adat sikeresen olvasva");
+                        //Console.ForegroundColor = ConsoleColor.Blue;
+                        //Console.WriteLine(trip.RouteID + "-hoz tartozó időjárás adat sikeresen olvasva");
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("HIBA: " + trip.RouteID +"-hoz tartozó időjárásadat nem lett olvasva." + Environment.NewLine);
+                        //Console.ForegroundColor = ConsoleColor.Red;
+                        ///Console.WriteLine("HIBA: " + trip.RouteID +"-hoz tartozó időjárásadat nem lett olvasva." + Environment.NewLine);
                     }
                 }
 
-                SimpleWeatherData swd = weather.getParquetFormat();
+                SimpleWeatherData swd = weather.getSerializableFormat();
                 swd.RouteID = trip.RouteID;
                 swd.TripID = trip.Veichle.TripID;
                 weatherDatas.Add(swd);

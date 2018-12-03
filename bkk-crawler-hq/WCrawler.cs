@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,13 +24,15 @@ namespace bkk_crawler_hq
         private readonly string base_url = "http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&appId={2}&units=metric";
 
 
-        public async Task<Weather> getWeatherByGeoTags(Location loc)
+        //public async Task<Weather> getWeatherByGeoTags(Location loc)
+        public Weather getWeatherByGeoTags(Location loc)
         {
             string url = URLBuilder(loc.Lat, loc.Lng);
             Weather weather;
-            using (var httpClient = new HttpClient())
+            //            using (var httpClient = new HttpClient())
+            using (var httpClient = new WebClient())
             {
-                var json = await httpClient.GetStringAsync(url);
+                var json = httpClient.DownloadString(url);
                 weather = JsonConvert.DeserializeObject<Weather>(json);
             }
 

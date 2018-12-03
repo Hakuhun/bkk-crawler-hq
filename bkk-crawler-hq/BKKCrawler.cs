@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace bkk_crawler_hq
             InitRoutes();
         }
 
-        private readonly List<string> frequent_routes = new List<string>()
+        private static readonly List<string> frequent_routes = new List<string>()
         {
             "BKK_3010",//1-es villamos
             "BKK_3020",//2-es villamos
@@ -95,7 +96,7 @@ namespace bkk_crawler_hq
         {
             foreach (string route in frequent_routes)
             {
-                List<RouteData> routes = getRouteDataByRoute(route).Result;
+                List<RouteData> routes = getRouteDataByRoute(route);
                 if (routes != null)
                 {
                     allRoutes.AddRange(routes);
@@ -103,14 +104,17 @@ namespace bkk_crawler_hq
             }
         }
 
-        public async Task<List<RouteData>> getRouteDataByRoute(string route_id)
+        //public async Task<List<RouteData>> getRouteDataByRoute(string route_id)
+        public List<RouteData> getRouteDataByRoute(string route_id)
         {
             List<RouteData> routes = null;
             var url = this.URLBuilder(route_id);
             Debug.Print("Route: "+ url + Environment.NewLine);
-            using (var httpClient = new HttpClient())
+            //using (var httpClient = new HttpClient())
+            using (var httpClient = new WebClient())
             {
-                var jsonText = await httpClient.GetStringAsync(url);
+                var jsonText = httpClient.DownloadString(url);
+                //var jsonText = httpClient.GetString(url);
                 JObject json = JObject.Parse(jsonText);
                 var conditionCode = json.GetValue("code").Value<string>();
                 if (conditionCode == "200")
@@ -123,15 +127,18 @@ namespace bkk_crawler_hq
             return routes;
         }
 
-        public async Task<Trip> getDetailedTripData(RouteData route)
+        //public async Task<Trip> getDetailedTripData(RouteData route)
+        public Trip getDetailedTripData(RouteData route)
         {
             string url = this.URLBuilder(route);
             Debug.Print(url + "\n");
             Trip trip;
-            using (var httpClient = new HttpClient())
+            //using (var httpClient = new HttpClient())
+            using (var httpClient = new WebClient())
             {
-                var jsonText = await httpClient.GetStringAsync(url);
-                
+                //var jsonText = await httpClient.GetStringAsync(url);
+                var jsonText = httpClient.DownloadString(url);
+
                 JObject json = JObject.Parse(jsonText);
                 var conditionCode = json.GetValue("code").Value<string>();
                 var currenttime = long.Parse(json.GetValue("currentTime").Value<string>());

@@ -96,7 +96,7 @@ namespace bkk_crawler_hq.Model
             }
         }
 
-        public SimpleWeatherData getParquetFormat()
+        public SimpleWeatherData getSerializableFormat()
         {
             return new SimpleWeatherData(this);
         }
