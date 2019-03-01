@@ -12,29 +12,25 @@ namespace bkk_crawler_hq
     class Program
     {
         static Stopwatch sw = new Stopwatch();
+        static Crawler crawler;
         static void Main(string[] args)
         {
-            
-            Crawler crawler = new Crawler();
-            sw.Start();
-            crawler.getDataParallel();
-            sw.Stop();
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("A párhuzamosított modell: " + sw.Elapsed);
-            crawler.clearData();
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("Egy perc várakozás az Időjárás API miatt");
-            Thread.Sleep(60000);
-            sw.Restart();
-            crawler.GetDataSequential();
-            sw.Stop();
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("A szekvenciális modell: " + sw.Elapsed);
-            sw.Restart();
-            crawler.SerializeData();
-            sw.Stop();
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
-            Console.WriteLine("A szerializáció: " + sw.Elapsed);
+            int i = 0;
+            while (true) {
+                crawler = new Crawler();
+                Console.Clear();
+                Console.WriteLine(string.Format("{0}. ciklus",i));
+                crawler.getDataParallel();
+                Console.WriteLine(crawler.Message);
+                crawler.SerializeData();
+                crawler.clearData();
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("Egy perc várakozás az Időjárás API miatt");
+                Thread.Sleep(60001);
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                i++;
+            }
+
             Console.ReadLine();
         }
 

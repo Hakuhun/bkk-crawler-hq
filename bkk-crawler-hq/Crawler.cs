@@ -31,6 +31,9 @@ namespace bkk_crawler_hq
 
         private readonly string weather_path = String.Empty, trip_path = String.Empty, stop_path = String.Empty;
 
+        public string Message => string.Format("{0}. viszonylaton, {1}. járat és {2}. megálló adata begyűjve.",
+            bkk.AllRoutes.Count, tripDatas.Count, stopDatas.Count);
+
         public Crawler()
         {
             this.bkk = new BKKCrawler();
@@ -100,9 +103,9 @@ namespace bkk_crawler_hq
             Serializator.SerializeCollectionToCSV(tripDatas, trip_path + "trips.csv");
             Serializator.SerializeCollectionToCSV(weatherDatas, weather_path + "weathers.csv");
             Serializator.SerializeCollectionToCSV(stopDatas, stop_path + "stops.csv");
-            Serializator.SerializeCollectionToJSON(tripDatas, trip_path + "trips.json");
-            Serializator.SerializeCollectionToJSON(weatherDatas, weather_path + "weathers.json");
-            Serializator.SerializeCollectionToJSON(stopDatas, stop_path + "stops.json");
+            //Serializator.SerializeCollectionToJSON(tripDatas, trip_path + "trips.json");
+            //Serializator.SerializeCollectionToJSON(weatherDatas, weather_path + "weathers.json");
+            //Serializator.SerializeCollectionToJSON(stopDatas, stop_path + "stops.json");
         }
 
         async void Crawl(RouteData route)
@@ -146,6 +149,7 @@ namespace bkk_crawler_hq
                 swd.RouteID = trip.RouteID;
                 swd.TripID = trip.Veichle.TripID;
                 weatherDatas.Add(swd);
+
             }
             catch (NotInTransitException nit)
             {
