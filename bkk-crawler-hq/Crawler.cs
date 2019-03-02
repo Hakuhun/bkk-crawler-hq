@@ -2,6 +2,7 @@
 using bkk_crawler_hq.Model;
 using bkk_crawler_hq.Model.BKK;
 using bkk_crawler_hq.Model.Parquet;
+using bkk_crawler_hq.Model.Serialization;
 using Parquet;
 using Parquet.Data;
 using System;
@@ -24,6 +25,7 @@ namespace bkk_crawler_hq
         private static object blockobject = new object();
         private ConcurrentBag<ISimpleDataModel> tripDatas = new ConcurrentBag<ISimpleDataModel>();
         private ConcurrentBag<ISimpleDataModel> weatherDatas = new ConcurrentBag<ISimpleDataModel>();
+        private ConcurrentBag<ISimpleDataModel> collectedData = new ConcurrentBag<ISimpleDataModel>();
         private List<Task> tasksToDo = new List<Task>();
         private ConcurrentBag<StopData> stopDatas = new ConcurrentBag<StopData>();
 
@@ -67,21 +69,13 @@ namespace bkk_crawler_hq
                 {
                     local_trip = bkkc.getDetailedTripData(route);
                     tripDatas.Add(local_trip.getSerializableFormat());
-                    //Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    //Console.WriteLine(local_trip);
-
-
                     foreach (StopData stop in local_trip.Stops)
                     {
-                        //Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                        //Console.WriteLine(local_trip.RouteID.ToString() + " @ " + stop.ToString());
                         stopDatas.Add(stop);
-
                     }
                     Weather local_weather = wc.getWeatherByGeoTags(local_trip.Veichle.Location);
-                    //Console.ForegroundColor = ConsoleColor.DarkBlue;
-                    //Console.WriteLine(local_weather);
-                    weatherDatas.Add(local_weather.getSerializableFormat());
+
+                    weatherDatas.Add(local_weather.getSerializableFormat()); ;
                 }
                 catch (BKKExcepton)
                 {
@@ -101,8 +95,13 @@ namespace bkk_crawler_hq
         public void SerializeData()
         {
             Serializator.SerializeCollectionToCSV(tripDatas, trip_path + "trips.csv");
+            Console.WriteLine("Trip data frissítve");
             Serializator.SerializeCollectionToCSV(weatherDatas, weather_path + "weathers.csv");
+            Console.WriteLine("Weather data frissítve");
             Serializator.SerializeCollectionToCSV(stopDatas, stop_path + "stops.csv");
+            Console.WriteLine("Stop data frisítve");
+            Serializator.SerializeCollectionToCSV(collectedData, "data.csv");
+            Console.WriteLine("Összesített adat frissítve");
             //Serializator.SerializeCollectionToJSON(tripDatas, trip_path + "trips.json");
             //Serializator.SerializeCollectionToJSON(weatherDatas, weather_path + "weathers.json");
             //Serializator.SerializeCollectionToJSON(stopDatas, stop_path + "stops.json");
@@ -149,6 +148,12 @@ namespace bkk_crawler_hq
                 swd.RouteID = trip.RouteID;
                 swd.TripID = trip.Veichle.TripID;
                 weatherDatas.Add(swd);
+                collectedData.Add(new SimpleCollectedData()
+                {
+                    SWeather = swd,
+                    STrip = (trip.getSerializableFormat() as SimpleTripData),
+                    Stops = trip.Stops
+                });
 
             }
             catch (NotInTransitException nit)

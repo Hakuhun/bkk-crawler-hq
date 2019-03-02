@@ -42,7 +42,7 @@ namespace bkk_crawler_hq.Model
             {
                 existing = JsonConvert.DeserializeObject<List<dynamic>>(File.ReadAllText(path));
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 existing = new List<dynamic>(list);
                 File.WriteAllText(path, JsonConvert.SerializeObject(existing));
