@@ -21,10 +21,12 @@ namespace bkk_crawler_hq
                 Console.Clear();
                 Console.WriteLine(string.Format("{0}. ciklus",i));
                 crawler.getDataParallel();
+                Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.WriteLine(crawler.Message);
+
                 crawler.SerializeData();
                 crawler.clearData();
-                Console.ForegroundColor = ConsoleColor.DarkGray;
+
                 Console.WriteLine("Egy perc várakozás az Időjárás API miatt");
                 Thread.Sleep(60001);
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
