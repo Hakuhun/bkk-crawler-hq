@@ -15,8 +15,6 @@ namespace bkk_crawler_hq
 
         static void Main(string[] args)
         {
-            Console.ReadLine();
-
             int i = 0;
             while (true) {
                 crawler = new Crawler();
