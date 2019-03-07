@@ -11,10 +11,12 @@ namespace bkk_crawler_hq
 {
     class Program
     {
-        static Stopwatch sw = new Stopwatch();
         static Crawler crawler;
+
         static void Main(string[] args)
         {
+            Console.ReadLine();
+
             int i = 0;
             while (true) {
                 crawler = new Crawler();

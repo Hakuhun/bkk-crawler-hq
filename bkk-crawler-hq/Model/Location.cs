@@ -7,18 +7,18 @@ namespace bkk_crawler_hq.Model
 {
     public class Location
     {
-        private float lat;
-        private float lng;
+        private double lat;
+        private double lng;
 
         [JsonProperty("lat")]
-        public float Lat
+        public double Lat
         {
             get => lat;
             set => lat = value;
         }
 
         [JsonProperty("lon")]
-        public float Lng
+        public double Lng
         {
             get => lng;
             set => lng = value;

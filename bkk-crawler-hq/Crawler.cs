@@ -22,6 +22,9 @@ namespace bkk_crawler_hq
 
         private BKKCrawler bkk;
         private WCrawler w;
+
+        private MapDetails MapDetails = new MapDetails();
+
         private static object blockobject = new object();
         private ConcurrentBag<ISimpleDataModel> tripDatas = new ConcurrentBag<ISimpleDataModel>();
         private ConcurrentBag<ISimpleDataModel> weatherDatas = new ConcurrentBag<ISimpleDataModel>();
@@ -58,32 +61,32 @@ namespace bkk_crawler_hq
             Task.WaitAll(tasksToDo.ToArray(), CancellationToken.None);
         }
 
-        public void GetDataSequential()
-        {
-            BKKCrawler bkkc = new BKKCrawler();
-            WCrawler wc = new WCrawler();
-            foreach (var route in bkkc.AllRoutes)
-            {
-                Trip local_trip = null;
-                try
-                {
-                    local_trip = bkkc.getDetailedTripData(route);
-                    tripDatas.Add(local_trip.getSerializableFormat());
-                    foreach (StopData stop in local_trip.Stops)
-                    {
-                        stopDatas.Add(stop);
-                    }
-                    Weather local_weather = wc.getWeatherByGeoTags(local_trip.Veichle.Location);
+        //public void GetDataSequential()
+        //{
+        //    BKKCrawler bkkc = new BKKCrawler();
+        //    WCrawler wc = new WCrawler();
+        //    foreach (var route in bkkc.AllRoutes)
+        //    {
+        //        Trip local_trip = null;
+        //        try
+        //        {
+        //            local_trip = bkkc.getDetailedTripData(route);
+        //            tripDatas.Add(local_trip.getSerializableFormat());
+        //            foreach (StopData stop in local_trip.Stops)
+        //            {
+        //                stopDatas.Add(stop);
+        //            }
+        //            Weather local_weather = wc.getWeatherByGeoTags(local_trip.Veichle.Location);
 
-                    weatherDatas.Add(local_weather.getSerializableFormat()); ;
-                }
-                catch (BKKExcepton)
-                {
-                    Console.WriteLine("HIBA");
-                }
+        //            weatherDatas.Add(local_weather.getSerializableFormat()); ;
+        //        }
+        //        catch (BKKExcepton)
+        //        {
+        //            Console.WriteLine("HIBA");
+        //        }
 
-            }
-        }
+        //    }
+        //}
 
         public void clearData()
         {
@@ -111,38 +114,21 @@ namespace bkk_crawler_hq
         {
             try
             {
-                //Trip trip = await bkk.getDetailedTripData(route);
+                foreach (Chunk chunk in MapDetails.Chunks)
+                {
+                    chunk.Weather = w.getWeatherByGeoTags(chunk.Center);
+                }
+
                 Trip trip = bkk.getDetailedTripData(route);
                 foreach (var stop in trip.Stops)
                 {
                     stopDatas.Add(stop);
                 }
 
-                lock (blockobject)
-                {
-                    //Console.ForegroundColor = ConsoleColor.Green;
-                    //Console.WriteLine(trip.RouteID + " sikeresen olvasva");
-                }
-
                 tripDatas.Add(trip.getSerializableFormat());
 
-                //Weather weather = await w.getWeatherByGeoTags(trip.Veichle.Location);
-                Weather weather = w.getWeatherByGeoTags(trip.Veichle.Location);
-                weather.CurrentTime = trip.CurrentTime;
-
-                lock (blockobject)
-                {
-                    if (weather != null)
-                    {
-                        //Console.ForegroundColor = ConsoleColor.Blue;
-                        //Console.WriteLine(trip.RouteID + "-hoz tartozó időjárás adat sikeresen olvasva");
-                    }
-                    else
-                    {
-                        //Console.ForegroundColor = ConsoleColor.Red;
-                        ///Console.WriteLine("HIBA: " + trip.RouteID +"-hoz tartozó időjárásadat nem lett olvasva." + Environment.NewLine);
-                    }
-                }
+                //Weather weather = w.getWeatherByGeoTags(trip.Veichle.Location);
+                Weather weather = MapDetails.getWeatherByTrip(trip);                
 
                 SimpleWeatherData swd = weather.getSerializableFormat();
                 swd.RouteID = trip.RouteID;
