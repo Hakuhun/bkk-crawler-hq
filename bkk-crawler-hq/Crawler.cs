@@ -21,15 +21,14 @@ namespace bkk_crawler_hq
         Stopwatch sw = new Stopwatch();
 
         private BKKCrawler bkk;
-        private WCrawler w;
 
-        private MapDetails MapDetails = new MapDetails();
+        private MapDetails MapDetails = MapDetails.getInstance();
 
         private static object blockobject = new object();
         private ConcurrentBag<ISimpleDataModel> tripDatas = new ConcurrentBag<ISimpleDataModel>();
         private ConcurrentBag<ISimpleDataModel> weatherDatas = new ConcurrentBag<ISimpleDataModel>();
         private ConcurrentBag<ISimpleDataModel> collectedData = new ConcurrentBag<ISimpleDataModel>();
-        private List<Task> tasksToDo = new List<Task>();
+        private List<Task> routeDownloaderTasks = new List<Task>();
         private ConcurrentBag<StopData> stopDatas = new ConcurrentBag<StopData>();
 
         //private readonly string weather_path = "D:/BKK/weather/", trip_path = "D:/BKK/trip/", stop_path = "D:/BKK/stop/";
@@ -42,51 +41,33 @@ namespace bkk_crawler_hq
         public Crawler()
         {
             this.bkk = new BKKCrawler();
-            this.w = new WCrawler();
         }
 
-        public void getDataParallel()
+        public void DownloadWeatherDatas()
         {
-            foreach (RouteData route in this.bkk.AllRoutes)
-            {
-                Task task = new Task(() => { Crawl(route); }, TaskCreationOptions.LongRunning);
-                tasksToDo.Add(task);
-            }
-            
-            foreach (Task task in tasksToDo)
-            {
-                task.Start();
-            }
-
-            Task.WaitAll(tasksToDo.ToArray(), CancellationToken.None);
+            Task weatherDownloaderTask = new Task(() => MapDetails.DownloadWeatherData(), CancellationToken.None, TaskCreationOptions.LongRunning);
+            weatherDownloaderTask.Start();
         }
 
-        //public void GetDataSequential()
-        //{
-        //    BKKCrawler bkkc = new BKKCrawler();
-        //    WCrawler wc = new WCrawler();
-        //    foreach (var route in bkkc.AllRoutes)
-        //    {
-        //        Trip local_trip = null;
-        //        try
-        //        {
-        //            local_trip = bkkc.getDetailedTripData(route);
-        //            tripDatas.Add(local_trip.getSerializableFormat());
-        //            foreach (StopData stop in local_trip.Stops)
-        //            {
-        //                stopDatas.Add(stop);
-        //            }
-        //            Weather local_weather = wc.getWeatherByGeoTags(local_trip.Veichle.Location);
+        public void DownloadRouteDatas()
+        {
+            if (MapDetails != null)
+            {
+                foreach (RouteData route in this.bkk.AllRoutes)
+                {
+                    Task task = new Task(() => { Crawl(route); }, TaskCreationOptions.LongRunning);
+                    routeDownloaderTasks.Add(task);
+                    task.Start();
+                }
 
-        //            weatherDatas.Add(local_weather.getSerializableFormat()); ;
-        //        }
-        //        catch (BKKExcepton)
-        //        {
-        //            Console.WriteLine("HIBA");
-        //        }
+                //foreach (Task task in routeDownloaderTasks)
+                //{
+                //    task.Start();
+                //}
 
-        //    }
-        //}
+                Task.WaitAll(routeDownloaderTasks.ToArray(), CancellationToken.None);
+            }
+        }
 
         public void clearData()
         {
@@ -110,15 +91,10 @@ namespace bkk_crawler_hq
             //Serializator.SerializeCollectionToJSON(stopDatas, stop_path + "stops.json");
         }
 
-        async void Crawl(RouteData route)
+        void Crawl(RouteData route)
         {
             try
             {
-                foreach (Chunk chunk in MapDetails.Chunks)
-                {
-                    chunk.Weather = w.getWeatherByGeoTags(chunk.Center);
-                }
-
                 Trip trip = bkk.getDetailedTripData(route);
                 foreach (var stop in trip.Stops)
                 {
@@ -127,8 +103,7 @@ namespace bkk_crawler_hq
 
                 tripDatas.Add(trip.getSerializableFormat());
 
-                //Weather weather = w.getWeatherByGeoTags(trip.Veichle.Location);
-                Weather weather = MapDetails.getWeatherByTrip(trip);                
+                Weather weather = MapDetails.GetWeatherByTrip(trip);
 
                 SimpleWeatherData swd = weather.getSerializableFormat();
                 swd.RouteID = trip.RouteID;
@@ -159,6 +134,7 @@ namespace bkk_crawler_hq
                 }
             }
         }
+
     }
 }
 

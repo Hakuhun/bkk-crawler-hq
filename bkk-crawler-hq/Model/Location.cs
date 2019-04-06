@@ -10,6 +10,12 @@ namespace bkk_crawler_hq.Model
         private double lat;
         private double lng;
 
+        public Location(double lat, double lng)
+        {
+            this.lat = lat;
+            this.lng = lng;
+        }
+
         [JsonProperty("lat")]
         public double Lat
         {

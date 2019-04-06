@@ -7,7 +7,7 @@ using bkk_crawler_hq.Model.Parquet;
 
 namespace bkk_crawler_hq.Model
 {
-    class Weather
+    public class Weather
     {
         private MainWeatherData main;
 
@@ -101,7 +101,7 @@ namespace bkk_crawler_hq.Model
             return new SimpleWeatherData(this);
         }
 
-        internal class SnowData
+        public class SnowData
         {
 
             /// <summary>
@@ -113,7 +113,7 @@ namespace bkk_crawler_hq.Model
             public int? Snow { get => snow; set => snow = value; }
         }
 
-        internal class RainData
+        public class RainData
         {
             /// <summary>
             /// Rain volume of the last 3 hour
@@ -124,7 +124,7 @@ namespace bkk_crawler_hq.Model
             public int? Rain { get => rain; set => rain = value; }
         }
 
-        internal class CloudData
+        public class CloudData
         {
             //TODO: IS IT IMPORTANT? 
             /// <summary>
@@ -138,7 +138,7 @@ namespace bkk_crawler_hq.Model
             public int Cloud { get => cloud; set => cloud = value; }
         }
 
-        internal class MainWeatherData
+        public class MainWeatherData
         {
             /// <summary>
             /// Current weather temperature in Celsius
@@ -169,7 +169,7 @@ namespace bkk_crawler_hq.Model
 
         }
 
-        internal class WindData
+        public class WindData
         {
             //TODO: IS IT IMPORTANT? 
             /// <summary>

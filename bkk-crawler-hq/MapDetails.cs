@@ -1,30 +1,57 @@
 ﻿using bkk_crawler_hq.Model;
 using bkk_crawler_hq.Model.BKK;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Device.Location;
+using System.IO;
+using System.Text;
 
 namespace bkk_crawler_hq
 {
-    class MapDetails
+    public class MapDetails
     {
-        private const int X = 10, Y = 6;
+        private static MapDetails instance;
 
-        private readonly Location LowerLeft = new Location() { Lat = 47.1523107, Lng = 18.8460594 };
-        private readonly Location UpperRight = new Location() { Lat = 47.6837053, Lng = 19.391385500000002 };
+        private const int X = 10, Y = 6;
+        private const string weatherpropertypath = "weatherproperties.json";
+        private WCrawler w = new WCrawler();
+
+        private static readonly Location LowerLeft = new Location(47.1523107, 18.8460594);
+        private static readonly Location UpperRight = new Location(47.6837053, 19.391385500000002);
 
         private double DiffLat => Math.Abs(UpperRight.Lat - LowerLeft.Lat) / X;
         private double DiffLng => Math.Abs(UpperRight.Lng - LowerLeft.Lng) / Y;
 
-        public ConcurrentBag<Chunk> Chunks { get; private set; }
+        public DateTime lastSaved { get; set; }
 
-        public MapDetails()
+        public ConcurrentBag<Chunk> Chunks { get; set; }
+
+        private MapDetails()
         {
-            Chunks = CalculateChunks();
+            InitMapDetails();
         }
 
-        public Weather getWeatherByTrip(Trip trip)
+        private void InitMapDetails()
+        {
+            if (!File.Exists(weatherpropertypath))
+            {
+                Chunks = CalculateChunks();
+            }
+        }
+
+        public static MapDetails getInstance()
+        {
+            if (instance == null)
+            {
+                instance = Deserialize();
+            }
+            instance.DownloadWeatherData();
+            return instance;
+        }
+
+        public Weather GetWeatherByTrip(Trip trip)
         {
             Weather w = MinimalDistance(trip).Weather;
             w.Latitude = trip.Veichle.Location.Lat;
@@ -42,14 +69,14 @@ namespace bkk_crawler_hq
                 for (int j = 0; j < Y; j++)
                 {
                     double lng = LowerLeft.Lng + (j * DiffLng);
-                    Location loc = new Location() {  Lat = lat, Lng = lng};
+                    Location loc = new Location(lat, lng);
                     local.Add(new Chunk() { Center = loc });
                 }
             }
             return local;
         }
 
-        private Chunk MinimalDistance(Trip trip)
+        public Chunk MinimalDistance(Trip trip)
         {
             Dictionary<double, Chunk> distances = new Dictionary<double, Chunk>();
             foreach (Chunk chunk in Chunks)
@@ -75,6 +102,43 @@ namespace bkk_crawler_hq
             GeoCoordinate pin2 = new GeoCoordinate(veichle.Lat, veichle.Lng);
 
             return pin1.GetDistanceTo(pin2);
+        }
+
+        private void Serialize()
+        {
+            string output = JsonConvert.SerializeObject(this);
+            //Console.WriteLine(output);
+            StreamWriter sw = new StreamWriter(weatherpropertypath,false, Encoding.UTF8);
+            sw.Write(output);
+            sw.Close();
+        }
+
+        private static MapDetails Deserialize()
+        {
+            if (File.Exists(weatherpropertypath))
+            {
+                string input = File.ReadAllText(weatherpropertypath);
+                var a = JsonConvert.DeserializeObject<MapDetails>(input);
+                return a;
+            }
+            else
+            {
+                return new MapDetails();
+            }
+        }
+
+        public void DownloadWeatherData()
+        {
+            TimeSpan diff = (DateTime.Now - this.lastSaved);
+            if (this.lastSaved == null ||  diff.Hours >= TimeSpan.FromHours(2).Hours)
+            {
+                lastSaved = DateTime.Now;
+                foreach (Chunk chunk in Chunks)
+                {
+                    chunk.Weather = w.getWeatherByGeoTags(chunk.Center);
+                }
+                Serialize();
+            }
         }
     }
 }

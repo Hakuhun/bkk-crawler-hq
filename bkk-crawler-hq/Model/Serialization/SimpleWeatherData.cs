@@ -4,7 +4,7 @@ using System.Text;
 
 namespace bkk_crawler_hq.Model.Parquet
 {
-    class SimpleWeatherData : ISimpleDataModel
+    public class SimpleWeatherData : ISimpleDataModel
     {
         public SimpleWeatherData()
         {

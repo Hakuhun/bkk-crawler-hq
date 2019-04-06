@@ -15,26 +15,36 @@ namespace bkk_crawler_hq
 
         static void Main(string[] args)
         {
-            int i = 0;
-            while (true) {
-                crawler = new Crawler();
-                Console.Clear();
-                Console.WriteLine(string.Format("{0}. ciklus",i));
-                crawler.getDataParallel();
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine(crawler.Message);
+            System.Timers.Timer weatherTimer = new System.Timers.Timer();
+            System.Timers.Timer routeTimer = new System.Timers.Timer();
 
-                crawler.SerializeData();
-                crawler.clearData();
+            crawler = new Crawler();
 
-                Console.WriteLine("Egy perc várakozás az Időjárás API miatt");
-                Thread.Sleep(60001);
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                i++;
-            }
+            weatherTimer.Elapsed += WeatherTimer_Elapsed;
+            weatherTimer.Interval = 7500000;
+            weatherTimer.Start();
 
+            routeTimer.Elapsed += RouteTimer_Elapsed;
+            routeTimer.Interval = 300000;
+            routeTimer.Start();
             Console.ReadLine();
         }
 
+        private static void RouteTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            Console.Clear();
+
+            crawler.DownloadRouteDatas();
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(crawler.Message);
+
+            crawler.SerializeData();
+            crawler.clearData();
+        }
+
+        private static void WeatherTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            crawler.DownloadWeatherDatas();
+        }
     }
 }

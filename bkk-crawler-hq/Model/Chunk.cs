@@ -6,7 +6,7 @@ using System.Text;
 
 namespace bkk_crawler_hq.Model
 {
-    class Chunk
+    public class Chunk
     {
         public Location Center { get; set; }
 
