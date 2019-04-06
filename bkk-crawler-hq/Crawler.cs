@@ -78,14 +78,15 @@ namespace bkk_crawler_hq
 
         public void SerializeData()
         {
-            Serializator.SerializeCollectionToCSV(tripDatas, trip_path + "trips.csv");
-            Console.WriteLine("Trip data frissítve");
-            Serializator.SerializeCollectionToCSV(weatherDatas, weather_path + "weathers.csv");
-            Console.WriteLine("Weather data frissítve");
-            Serializator.SerializeCollectionToCSV(stopDatas, stop_path + "stops.csv");
-            Console.WriteLine("Stop data frisítve");
+            //Serializator.SerializeCollectionToCSV(tripDatas, trip_path + "trips.csv");
+            //Console.WriteLine("Trip data frissítve");
+            //Serializator.SerializeCollectionToCSV(weatherDatas, weather_path + "weathers.csv");
+            //Console.WriteLine("Weather data frissítve");
+            //Serializator.SerializeCollectionToCSV(stopDatas, stop_path + "stops.csv");
+            //Console.WriteLine("Stop data frisítve");
             Serializator.SerializeCollectionToCSV(collectedData, "data.csv");
             Console.WriteLine("Összesített adat frissítve");
+
             //Serializator.SerializeCollectionToJSON(tripDatas, trip_path + "trips.json");
             //Serializator.SerializeCollectionToJSON(weatherDatas, weather_path + "weathers.json");
             //Serializator.SerializeCollectionToJSON(stopDatas, stop_path + "stops.json");

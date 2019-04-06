@@ -132,6 +132,7 @@ namespace bkk_crawler_hq
             TimeSpan diff = (DateTime.Now - this.lastSaved);
             if (this.lastSaved == null ||  diff.Hours >= TimeSpan.FromHours(2).Hours)
             {
+                Console.WriteLine("Időjárásadatok frissítve");
                 lastSaved = DateTime.Now;
                 foreach (Chunk chunk in Chunks)
                 {
