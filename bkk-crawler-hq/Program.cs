@@ -15,10 +15,11 @@ namespace bkk_crawler_hq
         public static long size = 0;
         static Crawler crawler;
 
+        static System.Timers.Timer weatherTimer = new System.Timers.Timer();
+        static System.Timers.Timer routeTimer = new System.Timers.Timer();
+
         static void Main(string[] args)
         {
-            System.Timers.Timer weatherTimer = new System.Timers.Timer();
-            System.Timers.Timer routeTimer = new System.Timers.Timer();
 
             crawler = new Crawler();
 
@@ -38,7 +39,7 @@ namespace bkk_crawler_hq
                 Console.WriteLine("Az alkamazás fut, ("+cycle+") bezárásához adja meg az (X) karaktert");
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 closingStatement = Console.ReadLine();
-            } while (closingStatement.ToLower().Trim() != "X");
+            } while (closingStatement.ToLower().Trim() != "x");
 
         }
 
@@ -64,6 +65,16 @@ namespace bkk_crawler_hq
             crawler.DownloadWeatherDatas();
         }
 
-
+        static public double RouteTimerIntervall
+        {
+            get
+            {
+                return routeTimer.Interval;
+            }
+            set
+            {
+                routeTimer.Interval = value;
+            }
+        }
     }
 }

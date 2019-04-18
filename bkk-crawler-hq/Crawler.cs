@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +34,7 @@ namespace bkk_crawler_hq
         private ConcurrentBag<StopData> stopDatas = new ConcurrentBag<StopData>();
 
         //private readonly string weather_path = "D:/BKK/weather/", trip_path = "D:/BKK/trip/", stop_path = "D:/BKK/stop/";
-
+        private readonly string dataPrePath = "C:/DEV/hadoop/";
         private readonly string weather_path = String.Empty, trip_path = String.Empty, stop_path = String.Empty;
 
         public string Message => string.Format("{0}. viszonylaton, {1}. járat és {2}. megálló adata begyűjve.",
@@ -84,7 +86,7 @@ namespace bkk_crawler_hq
             //Console.WriteLine("Weather data frissítve");
             //Serializator.SerializeCollectionToCSV(stopDatas, stop_path + "stops.csv");
             //Console.WriteLine("Stop data frisítve");
-            Serializator.SerializeCollectionToCSV(collectedData, "data.csv");
+            Serializator.SerializeCollectionToCSV(collectedData, dataPrePath + "data.csv");
             Console.WriteLine("Összesített adat frissítve");
 
             //Serializator.SerializeCollectionToJSON(tripDatas, trip_path + "trips.json");
@@ -117,6 +119,28 @@ namespace bkk_crawler_hq
                     Stops = trip.Stops
                 });
 
+            }
+            catch(WebException we)
+            {
+                lock (blockobject)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Hiba történt az adatok letöltése közben (BKK)");
+                    if (Program.RouteTimerIntervall < 5 *60000)
+                    {
+                        Program.RouteTimerIntervall += 60000;
+
+                        MailMessage mail = new MailMessage("bakonyi.gergo.istvan@gmail.com", "bakonyi.gergo.istvan@gmail.com");
+                        SmtpClient client = new SmtpClient();
+                        client.Port = 25;
+                        client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                        client.UseDefaultCredentials = false;
+                        client.Host = "smtp.gmail.com";
+                        mail.Subject = "BKK App";
+                        mail.Body = "Hiba történt a viszonylatadatok letöltése közben " + DateTime.Now.ToLongTimeString() ;
+                        client.Send(mail);
+                    }
+                }
             }
             catch (NotInTransitException nit)
             {
