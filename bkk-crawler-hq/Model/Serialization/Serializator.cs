@@ -33,6 +33,7 @@ namespace bkk_crawler_hq.Model
             }
 
             File.AppendAllText(path, text, Encoding.UTF8);
+            text = null;
         }
 
         public static void SerializeCollectionToJSON(IEnumerable<ISimpleDataModel> list, string path)

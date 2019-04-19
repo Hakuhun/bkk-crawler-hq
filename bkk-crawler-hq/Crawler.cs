@@ -73,6 +73,7 @@ namespace bkk_crawler_hq
 
         public void clearData()
         {
+            collectedData.Clear();
             tripDatas.Clear();
             stopDatas.Clear();
             weatherDatas.Clear();
