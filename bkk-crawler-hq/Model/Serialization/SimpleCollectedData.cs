@@ -19,7 +19,7 @@ namespace bkk_crawler_hq.Model.Serialization
         {
             StringBuilder sb = new StringBuilder();
 
-            string baseTripData = string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
+            string baseTripData = string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};",
                 STrip.CurrentTime, STrip.RouteID, STrip.TripID, STrip.VeichleID,
                 STrip.VeichleType, STrip.Model, STrip.Status,
                 STrip.Longitude, STrip.Latitude
@@ -53,8 +53,8 @@ namespace bkk_crawler_hq.Model.Serialization
                 "VeichleType;" +
                 "VeichleModel;" +
                 "TripStatus;" +
-                "VeichleLongitude" +
-                "VeichleLatitude" +
+                "VeichleLongitude;" +
+                "VeichleLatitude;" +
                 "StopID;" +
                 "StopSequance;" +
                 "PredictedArrivalTime;" +
@@ -66,7 +66,7 @@ namespace bkk_crawler_hq.Model.Serialization
                 "Preasure;" +
                 "WindIntensity;" +
                 "SnowIntesity;" +
-                "RainIntensity"
+                "RainIntensity;"
                 );
         }
     }
