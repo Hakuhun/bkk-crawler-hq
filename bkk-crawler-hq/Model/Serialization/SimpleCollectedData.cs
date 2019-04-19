@@ -30,10 +30,15 @@ namespace bkk_crawler_hq.Model.Serialization
                 );
             foreach (StopData stop in Stops)
             {
-                string localStopData = string.Format("{0};{1};{3};{4};{5};",
-                        stop.StopId, stop.StopSquence, stop.PredictedArrivalTime, 
-                        stop.ArrivalTime, Math.Abs((stop.PredictedArrivalTime-stop.ArrivalTime)), 
-                        stop.PredictedDepartureTime, stop.DepartureTime, Math.Abs((stop.PredictedDepartureTime-stop.DepartureTime))
+                string localStopData = string.Format("{0};{1};{3};{4};{5};{6};{7};",
+                        stop.StopId, 
+                        stop.StopSquence, 
+                        stop.PredictedArrivalTime, 
+                        stop.ArrivalTime,
+                        Math.Abs((stop.PredictedArrivalTime-stop.ArrivalTime)), 
+                        stop.PredictedDepartureTime, 
+                        stop.DepartureTime,
+                        Math.Abs((stop.PredictedDepartureTime-stop.DepartureTime))
                     );
                 sb.Append(baseTripData);
                 sb.Append(localStopData);
@@ -60,10 +65,10 @@ namespace bkk_crawler_hq.Model.Serialization
                 "StopSequance;" +
                 "PredictedArrivalTime;" +
                 "ArrivalTime;" +
-                "ArrivalDiff" +
+                "ArrivalDiff;" +
                 "PredictedDepartureTime;" +
                 "DepartureTime;" +
-                "DepartureDiff" +
+                "DepartureDiff;" +
                 "Temperature;" +
                 "Humidity;" +
                 "Preasure;" +
