@@ -32,7 +32,8 @@ namespace bkk_crawler_hq.Model.Serialization
             {
                 string localStopData = string.Format("{0};{1};{3};{4};{5};",
                         stop.StopId, stop.StopSquence, stop.PredictedArrivalTime, 
-                        stop.ArrivalTime, stop.PredictedDepartureTime, stop.DepartureTime
+                        stop.ArrivalTime, Math.Abs((stop.PredictedArrivalTime-stop.ArrivalTime)), 
+                        stop.PredictedDepartureTime, stop.DepartureTime, Math.Abs((stop.PredictedDepartureTime-stop.DepartureTime))
                     );
                 sb.Append(baseTripData);
                 sb.Append(localStopData);
@@ -59,14 +60,17 @@ namespace bkk_crawler_hq.Model.Serialization
                 "StopSequance;" +
                 "PredictedArrivalTime;" +
                 "ArrivalTime;" +
+                "ArrivalDiff" +
                 "PredictedDepartureTime;" +
                 "DepartureTime;" +
+                "DepartureDiff" +
                 "Temperature;" +
                 "Humidity;" +
                 "Preasure;" +
                 "WindIntensity;" +
                 "SnowIntesity;" +
-                "RainIntensity;"
+                "RainIntensity;" +
+                Environment.NewLine
                 );
         }
     }

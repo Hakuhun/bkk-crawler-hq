@@ -86,6 +86,7 @@ namespace bkk_crawler_hq
             //Console.WriteLine("Weather data frissítve");
             //Serializator.SerializeCollectionToCSV(stopDatas, stop_path + "stops.csv");
             //Console.WriteLine("Stop data frisítve");
+            Console.WriteLine("Összesített adat frissítése elkezdődött...");
             Serializator.SerializeCollectionToCSV(collectedData, dataPrePath + "data.csv");
             Console.WriteLine("Összesített adat frissítve");
 
