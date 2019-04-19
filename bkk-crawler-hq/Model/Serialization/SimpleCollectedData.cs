@@ -30,7 +30,7 @@ namespace bkk_crawler_hq.Model.Serialization
                 );
             foreach (StopData stop in Stops)
             {
-                string localStopData = string.Format("{0};{1};{3};{4};{5};{6};{7};",
+                string localStopData = string.Format("{0};{1};{2};{3};{4};{5};{6};{7};",
                         stop.StopId, 
                         stop.StopSquence, 
                         stop.PredictedArrivalTime, 
