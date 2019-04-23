@@ -133,6 +133,7 @@ namespace bkk_crawler_hq
             string url = this.URLBuilder(route);
             Debug.Print(url + "\n");
             Trip trip;
+
             //using (var httpClient = new HttpClient())
             using (var httpClient = new WebClient())
             {
@@ -152,7 +153,7 @@ namespace bkk_crawler_hq
 
                     for (int i = 0; i < trip.Stops.Count; i++)
                     {
-                        trip.Stops[i].CurrentTime = trip.CurrentTime;
+                        trip.Stops[i].CurrentTime = (int) trip.CurrentTime / 1000;
                         trip.Stops[i].RouteId = trip.RouteID;
                         trip.Stops[i].TripId = trip.Veichle.TripID;
                         trip.Stops[i].VeichleId = trip.Veichle.VeichleID;
