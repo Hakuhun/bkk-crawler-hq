@@ -31,7 +31,7 @@ namespace bkk_crawler_hq.Model
             {
                 text += data.getCSVFormat();
             }
-
+            text.Replace(',','.');
             File.AppendAllText(path, text, Encoding.UTF8);
             text = null;
         }
