@@ -43,7 +43,7 @@ namespace bkk_crawler_hq
             InitRoutes();
         }
 
-        private static readonly List<string> frequent_routes = new List<string>()
+        private readonly List<string> frequent_routes = new List<string>()
         {
             "BKK_3010",//1-es villamos
             "BKK_3020",//2-es villamos
@@ -53,26 +53,26 @@ namespace bkk_crawler_hq
             "BKK_3170",//17-es villamos
             "BKK_3190",//19-es villamos
             "BKK_3410",//41-es villamos
-            "BKK_OPM1",//M1
-            "BKK_OPM2",//M2
-            "BKK_OPM3",//M3
-            "BKK_OPM4",//M4
+            "BKK_5100",//M1
+            "BKK_5200",//M2
+            "BKK_5300",//M3
+            "BKK_5400",//M4
             //"BKK_MP533",//M3 pótló
             //"BKK_MP53",//M3 pótló
             //"BKK_MP536",//M3 pótló
             //"BKK_MP531",//M3 pótló
             "BKK_6470",//H5-> Békásmegyer
-            "BKK_HK64",//H5 pótló
-            "BKK_OPH5",//H5 pótló
+            //"BKK_HK64",//H5 pótló
+            //"BKK_OPH5",//H5 pótló
             "BKK_6230",//H6 -> Dunaharaszti
             "BKK_6210",//H6 -> Tököl
             "BKK_6200",//H6 -> Ráckeve
-            "BKK_OPH6",//H6 pótló
+            //"BKK_OPH6",//H6 pótló
             "BKK_6300",//H7 -> CSEPEL <3 
-            "BKK_OPH7",//H7 pótló
+            //"BKK_OPH7",//H7 pótló
             "BKK_6100",//H8 -> Gödöllő
             "BKK_6130",//H8 -> Cinkota
-            "BKK_OPH8",//H8 pótló
+            //"BKK_OPH8",//H8 pótló
             "BKK_0050",//5-ös busz
             "BKK_0070",//7-es busz
             "BKK_0075",//7E-es busz
@@ -142,7 +142,9 @@ namespace bkk_crawler_hq
 
                 JObject json = JObject.Parse(jsonText);
                 var conditionCode = json.GetValue("code").Value<string>();
-                var currenttime = long.Parse(json.GetValue("currentTime").Value<string>());
+                var currenttime = //DateTimeOffset.Now.ToUnixTimeSeconds();
+                (long) long.Parse(json.GetValue("currentTime").Value<string>()) ;
+
 
                 if (conditionCode == "200")
                 {
