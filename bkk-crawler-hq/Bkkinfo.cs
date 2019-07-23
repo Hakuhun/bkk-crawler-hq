@@ -8,6 +8,6 @@ namespace bkk_crawler_hq
         public long Id { get; set; }
         public string Title { get; set; }
         public string Code { get; set; }
-        public long? RouteType { get; set; }
+        public string RouteType { get; set; }
     }
 }

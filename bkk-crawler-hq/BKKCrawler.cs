@@ -54,7 +54,25 @@ namespace bkk_crawler_hq
             var db = new BKKInfoContext();
             foreach (Bkkinfo bkkinfo in db.Bkkinfo)
             {
-                List<RouteData> routes = getRouteDataByRoute(bkkinfo.Code);
+                List<RouteData> routes = null;
+                if (bkkinfo.RouteType == "ÉJSZAKAI")
+                {
+                    if((DateTime.Now.Hour >= 23 || DateTime.Now.Hour <= 05))
+                        routes = getRouteDataByRoute(bkkinfo.Code);
+                }
+                else if(bkkinfo.RouteType == "NONSTOP")
+                {
+                    routes = getRouteDataByRoute(bkkinfo.Code);
+                }
+                else
+                {
+                    if ((DateTime.Now.Hour >= 04 && DateTime.Now.Hour <= 00))
+                    {
+                        routes = getRouteDataByRoute(bkkinfo.Code);
+                    }
+                }
+
+
                 if (routes != null)
                 {
                     allRoutes.AddRange(routes);
@@ -62,6 +80,7 @@ namespace bkk_crawler_hq
             }
         }
 
+        //TODO DB kiterjesztése kezdő és vég időre.
         //public async Task<List<RouteData>> getRouxteDataByRoute(string route_id)
         public List<RouteData> getRouteDataByRoute(string route_id)
         {
