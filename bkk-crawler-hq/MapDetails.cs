@@ -1,10 +1,10 @@
 ﻿using bkk_crawler_hq.Model;
 using bkk_crawler_hq.Model.BKK;
+using GeoCoordinatePortable;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Device.Location;
 using System.IO;
 using System.Text;
 

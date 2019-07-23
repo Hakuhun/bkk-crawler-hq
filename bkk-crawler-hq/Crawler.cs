@@ -1,4 +1,5 @@
 ﻿using bkk_crawler_hq.Exceptions;
+using bkk_crawler_hq.LocalData;
 using bkk_crawler_hq.Model;
 using bkk_crawler_hq.Model.BKK;
 using bkk_crawler_hq.Model.Parquet;
@@ -55,11 +56,13 @@ namespace bkk_crawler_hq
         {
             if (MapDetails != null)
             {
-                this.bkk.AllRoutes.ForEach(route => {
+                this.bkk.AllRoutes.ForEach(route =>
+                {
                     Task task = new Task(() => { Crawl(route); }, TaskCreationOptions.LongRunning);
                     routeDownloaderTasks.Add(task);
                     task.Start();
                 });
+
                 //foreach (RouteData route in this.bkk.AllRoutes)
                 //{
 
@@ -132,7 +135,7 @@ namespace bkk_crawler_hq
                 lock (blockobject)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Hiba történt az adatok letöltése közben (BKK)");
+                    Console.WriteLine("Hiba történt az adatok letöltése közben (BKK)"  + Environment.NewLine + we.Message);
                     if (Program.RouteTimerIntervall < 5 *60000)
                     {
                         Program.RouteTimerIntervall += 60000;
