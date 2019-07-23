@@ -1,5 +1,4 @@
 ﻿using bkk_crawler_hq.Exceptions;
-using bkk_crawler_hq.LocalData;
 using bkk_crawler_hq.Model;
 using bkk_crawler_hq.Model.BKK;
 using bkk_crawler_hq.Model.Parquet;

@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using bkk_crawler_hq.Exceptions;
-using bkk_crawler_hq.LocalData;
 using bkk_crawler_hq.Model;
 using bkk_crawler_hq.Model.BKK;
 using Newtonsoft.Json;
@@ -52,8 +51,8 @@ namespace bkk_crawler_hq
 
         protected void InitRoutes()
         {
-            var db = new BKKinfoContext();
-            foreach (BKKInfo bkkinfo in db.Bkkinfo)
+            var db = new BKKInfoContext();
+            foreach (Bkkinfo bkkinfo in db.Bkkinfo)
             {
                 List<RouteData> routes = getRouteDataByRoute(bkkinfo.Code);
                 if (routes != null)
@@ -63,7 +62,7 @@ namespace bkk_crawler_hq
             }
         }
 
-        //public async Task<List<RouteData>> getRouteDataByRoute(string route_id)
+        //public async Task<List<RouteData>> getRouxteDataByRoute(string route_id)
         public List<RouteData> getRouteDataByRoute(string route_id)
         {
             List<RouteData> routes = null;
