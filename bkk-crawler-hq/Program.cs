@@ -22,13 +22,14 @@ namespace bkk_crawler_hq
         {
 
             crawler = new Crawler();
+            crawler.DownloadWeatherDatas();
 
             weatherTimer.Elapsed += WeatherTimer_Elapsed;
             weatherTimer.Interval = 7500000;
             weatherTimer.Start();
 
             routeTimer.Elapsed += RouteTimer_Elapsed;
-            routeTimer.Interval = 30000*2;
+            routeTimer.Interval = 30000;
             routeTimer.Start();
 
             string closingStatement = "";

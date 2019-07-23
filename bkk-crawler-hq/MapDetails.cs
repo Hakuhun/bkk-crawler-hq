@@ -41,7 +41,7 @@ namespace bkk_crawler_hq
             }
         }
 
-        public static MapDetails getInstance()
+        public static MapDetails GetInstance()
         {
             if (instance == null)
             {

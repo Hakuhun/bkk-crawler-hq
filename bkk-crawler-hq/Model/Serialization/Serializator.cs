@@ -19,7 +19,7 @@ using DataColumn = Parquet.Data.DataColumn;
 
 namespace bkk_crawler_hq.Model
 {
-    class Serializator
+    class Serializator  
     {
         public static void SerializeCollectionToCSV(IEnumerable<ISimpleDataModel> list, string path)
         {
@@ -29,11 +29,9 @@ namespace bkk_crawler_hq.Model
 
             foreach (ISimpleDataModel data in list)
             {
-                text += data.getCSVFormat();
-            }
-            text.Replace(',','.');
+                text += data.getCSVFormat().Replace(',', '.');
+            } 
             File.AppendAllText(path, text, Encoding.UTF8);
-            text = null;
         }
 
         public static void SerializeCollectionToJSON(IEnumerable<ISimpleDataModel> list, string path)

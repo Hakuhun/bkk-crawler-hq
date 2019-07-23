@@ -11,10 +11,6 @@ using Newtonsoft.Json.Serialization;
 using Parquet;
 using Parquet.Data;
 
-/// <summary>
-/// https://www.confluent.io/blog/decoupling-systems-with-apache-kafka-schema-registry-and-avro/
-/// </summary>
-
 namespace bkk_crawler_hq.Model
 {
     public class SimpleTripData : ISimpleDataModel
@@ -34,6 +30,11 @@ namespace bkk_crawler_hq.Model
         public long CurrentTime
         {
             get => trip.CurrentTime;
+        }
+
+        public int GetDayOfTheWeek
+        {
+            get => DateTimeOffset.FromUnixTimeSeconds(CurrentTime).Day;
         }
 
         public double Latitude
@@ -71,7 +72,7 @@ namespace bkk_crawler_hq.Model
             get => trip.Veichle.Status;
         }
 
-        public string getJSONFormat()
+        public string GetJSONFormat()
         {
             return JsonConvert.SerializeObject(this);
         }
@@ -83,8 +84,8 @@ namespace bkk_crawler_hq.Model
 
         public string getCSVFormat()
         {
-            return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}" + Environment.NewLine,
-                CurrentTime, Latitude,Longitude, RouteID, TripID, VeichleID, Model, Status, VeichleType);
+            return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9}" + Environment.NewLine,
+                CurrentTime, GetDayOfTheWeek, Latitude,Longitude, RouteID, TripID, VeichleID, Model, Status, VeichleType);
         }
 
         public string getCSVHeader()

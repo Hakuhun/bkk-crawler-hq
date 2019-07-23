@@ -16,7 +16,7 @@ namespace bkk_crawler_hq.Test
         [OneTimeSetUp]
         public void Init()
         {
-            mapDetailsMock = MapDetails.getInstance();
+            mapDetailsMock = MapDetails.GetInstance();
         }
 
         [TestCase(47.63056584, 19.209610133333335)]

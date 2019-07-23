@@ -24,7 +24,7 @@ namespace bkk_crawler_hq
 
         private BKKCrawler bkk;
 
-        private MapDetails MapDetails = MapDetails.getInstance();
+        private MapDetails MapDetails = MapDetails.GetInstance();
 
         private static object blockobject = new object();
         private ConcurrentBag<ISimpleDataModel> tripDatas = new ConcurrentBag<ISimpleDataModel>();
@@ -55,12 +55,15 @@ namespace bkk_crawler_hq
         {
             if (MapDetails != null)
             {
-                foreach (RouteData route in this.bkk.AllRoutes)
-                {
+                this.bkk.AllRoutes.ForEach(route => {
                     Task task = new Task(() => { Crawl(route); }, TaskCreationOptions.LongRunning);
                     routeDownloaderTasks.Add(task);
                     task.Start();
-                }
+                });
+                //foreach (RouteData route in this.bkk.AllRoutes)
+                //{
+
+                //}
 
                 //foreach (Task task in routeDownloaderTasks)
                 //{
@@ -90,6 +93,8 @@ namespace bkk_crawler_hq
             Console.WriteLine("Összesített adat frissítése elkezdődött...");
             Serializator.SerializeCollectionToCSV(collectedData, dataPrePath + "data.csv");
             Console.WriteLine("Összesített adat frissítve");
+
+            
 
             //Serializator.SerializeCollectionToJSON(tripDatas, trip_path + "trips.json");
             //Serializator.SerializeCollectionToJSON(weatherDatas, weather_path + "weathers.json");
@@ -144,20 +149,23 @@ namespace bkk_crawler_hq
                     }
                 }
             }
-            catch (NotInTransitException nit)
-            {
-                lock (blockobject)
-                {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("HIBA: " + nit.Message + Environment.NewLine);
-                }
-            }
-            catch (BKKExcepton e)
+            catch(MissingRouteDataException rde)
             {
                 lock (blockobject)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("HIBA: " + e.Message + Environment.NewLine);
+                    Console.WriteLine("HIBA: " + rde.Message + Environment.NewLine);
+                }
+            }
+            catch (NullReferenceException nre)
+            {
+                Console.WriteLine(nre.Message);
+            }
+            catch (Exception ex)
+            {
+                if(!(ex is BKKException))
+                {
+                    Console.WriteLine(ex.Message);
                 }
             }
         }

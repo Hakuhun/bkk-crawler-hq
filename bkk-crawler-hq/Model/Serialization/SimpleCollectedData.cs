@@ -2,6 +2,7 @@
 using bkk_crawler_hq.Model.Parquet;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace bkk_crawler_hq.Model.Serialization
@@ -40,6 +41,7 @@ namespace bkk_crawler_hq.Model.Serialization
                         stop.DepartureTime,
                         Math.Abs((stop.PredictedDepartureTime-stop.DepartureTime))
                     );
+
                 sb.Append(baseTripData);
                 sb.Append(localStopData);
                 sb.Append(baseWeatherData);
@@ -48,6 +50,8 @@ namespace bkk_crawler_hq.Model.Serialization
 
             return sb.ToString();
         }
+
+
 
         public string getCSVHeader()
         {

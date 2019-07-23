@@ -5,20 +5,20 @@ using bkk_crawler_hq.Model.BKK;
 namespace bkk_crawler_hq
 {
     [Serializable]
-    internal class BKKExcepton : Exception
+    internal class BKKException : Exception
     {
         private string trip_id;
         private string veichle_id;
         private string route_id;
 
-        public BKKExcepton(string route_id, string trip_id, string veichle_id, string url = "")
+        public BKKException(string route_id, string trip_id, string veichle_id, string url = "")
         {
             this.route_id = route_id;
             this.trip_id = trip_id;
             this.veichle_id = veichle_id;
         }
 
-        public BKKExcepton(RouteData rd)
+        public BKKException(RouteData rd)
         {
             this.route_id = rd.RouteId;
             this.trip_id = rd.TripId;
