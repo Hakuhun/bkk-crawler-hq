@@ -7,7 +7,7 @@ using System.Text;
 
 namespace bkk_crawler_hq.Model.Serialization
 {
-    class SimpleCollectedData : ISimpleDataModel
+    public class SimpleCollectedData : ISimpleDataModel
     {
         public Trip Trip { get; set; }
         public Weather Weather { get; set; }
@@ -16,7 +16,7 @@ namespace bkk_crawler_hq.Model.Serialization
         public SimpleWeatherData SWeather { get; set; }
         public List<StopData> Stops { get; set; }
 
-        public string getCSVFormat()
+        public string GetCsvFormat()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -53,7 +53,7 @@ namespace bkk_crawler_hq.Model.Serialization
 
 
 
-        public string getCSVHeader()
+        public string GetCsvHeader()
         {
             return string.Format(
                 "CurrentTime;" +

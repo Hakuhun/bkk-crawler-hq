@@ -82,13 +82,13 @@ namespace bkk_crawler_hq.Model
             get => this.trip.Veichle.VeichleType;
         }
 
-        public string getCSVFormat()
+        public string GetCsvFormat()
         {
             return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9}" + Environment.NewLine,
                 CurrentTime, GetDayOfTheWeek, Latitude,Longitude, RouteID, TripID, VeichleID, Model, Status, VeichleType);
         }
 
-        public string getCSVHeader()
+        public string GetCsvHeader()
         {
             return "CurrentTime;Latitude;Longitude;RouteID;TripID;VeichleID;Model;Status;VeichleType" + Environment.NewLine;
         }

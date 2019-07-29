@@ -62,6 +62,8 @@ namespace bkk_crawler_hq.Exceptions
 
                 JObject json = JObject.FromObject(new {
                     status = "MISSING_DATA",
+                    at = DateTime.Now,
+                    on = "downloading detailed route data",
                     missingParts = missingDatas,
                     existingParts = existingDatas
                 });

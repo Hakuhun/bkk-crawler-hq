@@ -76,13 +76,13 @@ namespace bkk_crawler_hq.Model.BKK
 
         public long CurrentTime { get => currentTime; set => currentTime = value; }
 
-        public string getCSVFormat()
+        public string GetCsvFormat()
         {
             return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9}", RouteId, TripId, VeichleId, StopId,
                 CurrentTime, StopSquence, PredictedDepartureTime, DepartureTime, PredictedArrivalTime, ArrivalTime) + Environment.NewLine;
         }
 
-        public string getCSVHeader()
+        public string GetCsvHeader()
         {
             return
                 "RouteId;TripId;VeichleId;StopId;CurrentTime;StopSquence;PredictedDepartureTime;DepartureTime;PredictedArrivalTime;ArrivalTime" +

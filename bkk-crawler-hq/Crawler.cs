@@ -22,9 +22,11 @@ namespace bkk_crawler_hq
     {
         Stopwatch sw = new Stopwatch();
 
-        private BKKCrawler bkk;
+        private BkkCrawler bkk;
 
         private MapDetails MapDetails = MapDetails.GetInstance();
+        
+        ConcurrentBag<RouteData> allRoute = new ConcurrentBag<RouteData>();
 
         private static object blockobject = new object();
         private ConcurrentBag<ISimpleDataModel> tripDatas = new ConcurrentBag<ISimpleDataModel>();
@@ -34,15 +36,15 @@ namespace bkk_crawler_hq
         private ConcurrentBag<StopData> stopDatas = new ConcurrentBag<StopData>();
 
         //private readonly string weather_path = "D:/BKK/weather/", trip_path = "D:/BKK/trip/", stop_path = "D:/BKK/stop/";
-        private readonly string dataPrePath = "E:/DEV/hadoop/";
+        private readonly string dataPrePath = "C:/DEV/hadoop/";
         private readonly string weatherPath = String.Empty, trip_path = String.Empty, stop_path = String.Empty;
 
         public string Message => string.Format("{0}. viszonylaton, {1}. járat és {2}. megálló adata begyűjve.",
-            bkk.AllRoutes.Count, tripDatas.Count, stopDatas.Count);
+            allRoute.Count, tripDatas.Count, stopDatas.Count);
 
         public Crawler()
         {
-            this.bkk = new BKKCrawler();
+            this.bkk = new BkkCrawler();
         }
 
         public void DownloadWeatherDatas()
@@ -51,32 +53,32 @@ namespace bkk_crawler_hq
             weatherDownloaderTask.Start();
         }
 
-        public void DownloadRouteDatas()
+        public void InitializeBaseRouteDatas()
         {
-            if (MapDetails != null)
+            if(!allRoute.IsEmpty)
+                allRoute.Clear();
+            foreach (var route in bkk.GetRouteBaseDatas())
             {
-                this.bkk.AllRoutes.ForEach(route =>
-                {
-                    Task task = new Task(() => { Crawl(route); }, TaskCreationOptions.LongRunning);
-                    routeDownloaderTasks.Add(task);
-                    task.Start();
-                });
-
-                //foreach (RouteData route in this.bkk.AllRoutes)
-                //{
-
-                //}
-
-                //foreach (Task task in routeDownloaderTasks)
-                //{
-                //    task.Start();
-                //}
-
-                Task.WaitAll(routeDownloaderTasks.ToArray(), CancellationToken.None);
+                allRoute.Add(route);
             }
         }
 
-        public void clearData()
+        public void DownloadRouteDatas()
+        {
+            if (MapDetails == null) return;
+            if (allRoute == null) return;
+            
+            foreach (RouteData route in allRoute)
+            {
+                Task task = new Task(() => { Crawl(route); }, TaskCreationOptions.LongRunning);
+                routeDownloaderTasks.Add(task);
+                task.Start();
+            }
+                
+            Task.WaitAll(routeDownloaderTasks.ToArray(), CancellationToken.None);
+        }
+
+        public void ClearData()
         {
             collectedData.Clear();
             tripDatas.Clear();
@@ -107,7 +109,7 @@ namespace bkk_crawler_hq
         {
             try
             {
-                Trip trip = bkk.getDetailedTripData(route);
+                Trip trip = bkk.GetDetailedTripData(route);
                 foreach (var stop in trip.Stops)
                 {
                     stopDatas.Add(stop);

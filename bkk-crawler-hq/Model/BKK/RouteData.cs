@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace bkk_crawler_hq.Model.BKK
 {
-    class RouteData
+    public class RouteData
     {
         private string vehicleId;
         private string tripId;

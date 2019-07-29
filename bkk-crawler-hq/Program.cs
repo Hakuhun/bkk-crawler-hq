@@ -17,20 +17,29 @@ namespace bkk_crawler_hq
         static Crawler crawler;
 
         static System.Timers.Timer weatherTimer = new System.Timers.Timer();
+        static System.Timers.Timer tripTimer = new System.Timers.Timer();
         static System.Timers.Timer routeTimer = new System.Timers.Timer();
 
         static void Main(string[] args)
         {
             crawler = new Crawler();
             crawler.DownloadWeatherDatas();
+            crawler.InitializeBaseRouteDatas();
 
-            weatherTimer.Elapsed += WeatherTimer_Elapsed;
+            routeTimer.Elapsed += (sender, eventArgs) =>  crawler.InitializeBaseRouteDatas(); 
+            routeTimer.Interval = 30000*10;
+            routeTimer.Start();
+
+            weatherTimer.Elapsed += (sender, eventArgs) => crawler.DownloadWeatherDatas();
             weatherTimer.Interval = 7500000;
             weatherTimer.Start();
 
-            routeTimer.Elapsed += RouteTimer_Elapsed;
-            routeTimer.Interval = 30000;
-            routeTimer.Start();
+            tripTimer.Elapsed += TripTimer_Elapsed;
+            tripTimer.Interval = 30000;
+            tripTimer.Start();
+            
+
+            
 
             string closingStatement = "";
 
@@ -40,11 +49,11 @@ namespace bkk_crawler_hq
                 Console.WriteLine("Az alkamazás fut, ("+cycle+") bezárásához adja meg az (X) karaktert");
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 closingStatement = Console.ReadLine();
-            } while (closingStatement.ToLower().Trim() != "x");
+            } while (closingStatement != null && closingStatement.ToLower().Trim() != "x");
 
         }
 
-        private static void RouteTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private static void TripTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             Console.Clear();
 
@@ -53,7 +62,7 @@ namespace bkk_crawler_hq
             Console.WriteLine(crawler.Message);
 
             crawler.SerializeData();
-            crawler.clearData();
+            crawler.ClearData();
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Yellow;
             cycle++;
@@ -61,21 +70,10 @@ namespace bkk_crawler_hq
             Console.ForegroundColor = ConsoleColor.DarkGray;
         }
 
-        private static void WeatherTimer_Elapsed(object sender, ElapsedEventArgs e)
+        public static double RouteTimerIntervall
         {
-            crawler.DownloadWeatherDatas();
-        }
-
-        static public double RouteTimerIntervall
-        {
-            get
-            {
-                return routeTimer.Interval;
-            }
-            set
-            {
-                routeTimer.Interval = value;
-            }
+            get => routeTimer.Interval;
+            set => tripTimer.Interval = value;
         }
     }
 }

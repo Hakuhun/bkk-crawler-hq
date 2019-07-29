@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace bkk_crawler_hq
 {
-    public partial class BKKInfoContext : DbContext
+    public partial class bkkinfoContext : DbContext
     {
-        public BKKInfoContext()
+        public bkkinfoContext()
         {
         }
 
-        public BKKInfoContext(DbContextOptions<BKKInfoContext> options)
+        public bkkinfoContext(DbContextOptions<bkkinfoContext> options)
             : base(options)
         {
         }
@@ -40,7 +40,15 @@ namespace bkk_crawler_hq
 
                 entity.Property(e => e.Code).HasColumnName("code");
 
+                entity.Property(e => e.End)
+                    .HasColumnName("end")
+                    .HasColumnType("DATETIME");
+
                 entity.Property(e => e.RouteType).HasColumnName("routeType");
+
+                entity.Property(e => e.Start)
+                    .HasColumnName("start")
+                    .HasColumnType("DATETIME");
 
                 entity.Property(e => e.Title).HasColumnName("title");
             });

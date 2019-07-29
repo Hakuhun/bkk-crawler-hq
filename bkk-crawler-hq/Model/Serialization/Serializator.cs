@@ -25,11 +25,11 @@ namespace bkk_crawler_hq.Model
         {
             string text = "";
             if (!File.Exists(path))
-                text = list.FirstOrDefault().getCSVHeader();
+                text = list.FirstOrDefault().GetCsvHeader();
 
             foreach (ISimpleDataModel data in list)
             {
-                text += data.getCSVFormat().Replace(',', '.');
+                text += data.GetCsvFormat().Replace(',', '.');
             } 
             File.AppendAllText(path, text, Encoding.UTF8);
         }

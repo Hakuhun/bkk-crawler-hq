@@ -5,7 +5,7 @@ using bkk_crawler_hq.Model.BKK;
 namespace bkk_crawler_hq
 {
     [Serializable]
-    internal class BKKException : Exception
+    public class BKKException : Exception
     {
         private string trip_id;
         private string veichle_id;

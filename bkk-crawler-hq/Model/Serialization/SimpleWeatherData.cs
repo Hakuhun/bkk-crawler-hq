@@ -94,14 +94,14 @@ namespace bkk_crawler_hq.Model.Parquet
             get => weather.Wind.WindDegree;
         }
 
-        public string getCSVFormat()
+        public string GetCsvFormat()
         {
             return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11}",
                        CurrentTime, Latitude, Longutide, RouteID, TripID, SnowingIntensity, RainingIntensity,
                        Temperature, Humidity, Pressure, WindSpeed, WindDegree) + Environment.NewLine;
         }
 
-        public string getCSVHeader()
+        public string GetCsvHeader()
         {
             return
                 "CurrentTime;Latitude;Longutide;RouteID;TripID;SnowingIntensity;RainingIntensity;Temperature;Humidity;Pressure;WindSpeed;WindDegree" +

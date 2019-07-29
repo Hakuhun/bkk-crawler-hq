@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -17,7 +18,7 @@ namespace bkk_crawler_hq
     /// <summary>
     /// 
     /// </summary>
-    class BKKCrawler
+    class BkkCrawler
     {
         /// <summary>
         /// The API key 
@@ -39,38 +40,51 @@ namespace bkk_crawler_hq
 
         private List<RouteData> allRoutes = new List<RouteData>();
 
-        public BKKCrawler()
+        public BkkCrawler()
         {
-            InitRoutes();
+            //InitRoutes();
         }
 
-        public List<RouteData> AllRoutes
-        {
-            get { return allRoutes; }
-        }
+        //public List<RouteData> AllRoutes => allRoutes;
 
-        protected void InitRoutes()
+        public List<RouteData> GetRouteBaseDatas()
         {
-            var db = new BKKInfoContext();
+            var db = new bkkinfoContext();
             foreach (Bkkinfo bkkinfo in db.Bkkinfo)
             {
                 List<RouteData> routes = null;
-                routes = getRouteDataByRoute(bkkinfo.Code);
-                    
-
-                if (routes != null)
+                try
                 {
-                    allRoutes.AddRange(routes);
+                    routes = GetRouteDataByRoute(bkkinfo.Code);
+                    DateTime start = DateTime.Parse(bkkinfo.Start);
+                    DateTime end = DateTime.Parse(bkkinfo.End);
+                    if (end.Hour >= 0 && end.Hour <= 5)
+                    {
+                        end = end + TimeSpan.FromDays(1);
+                    }
+                    
+                    if (bkkinfo.RouteType != "NONSTOP" && BetweenTwoTimeHourMinute(start, end))
+                    {
+                        allRoutes.AddRange(routes);
+                    }else if (bkkinfo.RouteType == "NONSTOP")
+                    {
+                        allRoutes.AddRange(routes);
+                    }
+                }
+                catch (RouteNotFoundException e)
+                {
+                    Console.WriteLine(e);
                 }
             }
+
+            return allRoutes;
         }
 
-        //TODO DB kiterjesztése kezdő és vég időre.
         //public async Task<List<RouteData>> getRouxteDataByRoute(string route_id)
-        public List<RouteData> getRouteDataByRoute(string route_id)
+        private List<RouteData> GetRouteDataByRoute(string routeId)
         {
             List<RouteData> routes = null;
-            var url = this.URLBuilder(route_id);
+            var url = this.UrlBuilder(routeId);
             Debug.Print("Route: "+ url + Environment.NewLine);
             //using (var httpClient = new HttpClient())
             using (var httpClient = new WebClient())
@@ -83,6 +97,11 @@ namespace bkk_crawler_hq
                 {
                     var filteredJson = json.GetValue("data").SelectToken("list");
                     routes = filteredJson.ToObject<List<RouteData>>();
+                    
+                }
+                else
+                {
+                    throw new RouteNotFoundException(routeId);
                 }
             }
 
@@ -90,9 +109,9 @@ namespace bkk_crawler_hq
         }
 
         //public async Task<Trip> getDetailedTripData(RouteData route)
-        public Trip getDetailedTripData(RouteData route)
+        public Trip GetDetailedTripData(RouteData route)
         {
-            string url = this.URLBuilder(route);
+            string url = this.UrlBuilder(route);
             Debug.Print(url + "\n");
             Trip trip;
 
@@ -134,13 +153,23 @@ namespace bkk_crawler_hq
             }
         }
 
-        private string URLBuilder(string route_id)
+        private string UrlBuilder(string routeId)
         {
-            return string.Format("{0}vehicles-for-route.json?key={1}&version={2}&appVersion={3}&routeId={4}&includeReferences=false&related=false", base_url, key, version, appVersion, route_id);
+            return
+                $"{base_url}vehicles-for-route.json?key={key}&version={version}&appVersion={appVersion}&routeId={routeId}&includeReferences=false&related=false";
         }
-        private string URLBuilder(RouteData rd)
+        private string UrlBuilder(RouteData rd)
         {
-            return string.Format("{0}trip-details.json?key={1}&version={2}&appVersion={3}&tripId={4}&vehicleId={5}&includeReferences=false&related=false", base_url, key, version, appVersion, rd.TripId, rd.VehicleId);
+            return
+                $"{base_url}trip-details.json?key={key}&version={version}&appVersion={appVersion}&tripId={rd.TripId}&vehicleId={rd.VehicleId}&includeReferences=false&related=false";
+        }
+
+        private bool BetweenTwoTimeHourMinute(DateTime start, DateTime end)
+        {
+            DateTime now = DateTime.Now;
+            var editedStart = (start - TimeSpan.FromHours(1));
+            var editedEnd = end + (TimeSpan.FromHours(1));
+            return  editedStart <= now && editedEnd >= end;
         }
     }
 }

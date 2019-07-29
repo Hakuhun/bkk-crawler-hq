@@ -7,8 +7,9 @@ namespace bkk_crawler_hq.Model
 {
     public interface ISimpleDataModel
     {
-        string getCSVFormat();
-        string getCSVHeader();
+        string GetCsvFormat();
+        string GetCsvHeader();
+
         //void SerializeCollectionToJSON(IEnumerable<ISimpleDataModel> list, string path);
         //void SerializeCollectionToCSV(IEnumerable<ISimpleDataModel> list, string path, bool header = false);
     }
