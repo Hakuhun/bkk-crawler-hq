@@ -55,23 +55,8 @@ namespace bkk_crawler_hq
             foreach (Bkkinfo bkkinfo in db.Bkkinfo)
             {
                 List<RouteData> routes = null;
-                if (bkkinfo.RouteType == "ÉJSZAKAI")
-                {
-                    if((DateTime.Now.Hour >= 23 || DateTime.Now.Hour <= 05))
-                        routes = getRouteDataByRoute(bkkinfo.Code);
-                }
-                else if(bkkinfo.RouteType == "NONSTOP")
-                {
-                    routes = getRouteDataByRoute(bkkinfo.Code);
-                }
-                else
-                {
-                    if ((DateTime.Now.Hour >= 04 && DateTime.Now.Hour <= 00))
-                    {
-                        routes = getRouteDataByRoute(bkkinfo.Code);
-                    }
-                }
-
+                routes = getRouteDataByRoute(bkkinfo.Code);
+                    
 
                 if (routes != null)
                 {
@@ -111,7 +96,7 @@ namespace bkk_crawler_hq
             Debug.Print(url + "\n");
             Trip trip;
 
-            if (route.TripId == null || route.TripId == String.Empty || route.VehicleId == null || route.VehicleId == String.Empty)
+            if (string.IsNullOrEmpty(route.TripId) || route.VehicleId == null || route.VehicleId == String.Empty)
                 throw new MissingRouteDataException(route);
 
             //using (var httpClient = new HttpClient())

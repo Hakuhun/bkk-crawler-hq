@@ -6,6 +6,7 @@ using System.Timers;
 using bkk_crawler_hq.Model.BKK;
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace bkk_crawler_hq
 {
@@ -20,7 +21,6 @@ namespace bkk_crawler_hq
 
         static void Main(string[] args)
         {
-
             crawler = new Crawler();
             crawler.DownloadWeatherDatas();
 

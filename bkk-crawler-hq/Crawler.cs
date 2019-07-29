@@ -34,8 +34,8 @@ namespace bkk_crawler_hq
         private ConcurrentBag<StopData> stopDatas = new ConcurrentBag<StopData>();
 
         //private readonly string weather_path = "D:/BKK/weather/", trip_path = "D:/BKK/trip/", stop_path = "D:/BKK/stop/";
-        private readonly string dataPrePath = "C:/DEV/hadoop/";
-        private readonly string weather_path = String.Empty, trip_path = String.Empty, stop_path = String.Empty;
+        private readonly string dataPrePath = "E:/DEV/hadoop/";
+        private readonly string weatherPath = String.Empty, trip_path = String.Empty, stop_path = String.Empty;
 
         public string Message => string.Format("{0}. viszonylaton, {1}. járat és {2}. megálló adata begyűjve.",
             bkk.AllRoutes.Count, tripDatas.Count, stopDatas.Count);
